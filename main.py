@@ -86,14 +86,20 @@ class Sensory(Cell):
             sec.Ra = 100
             sec.cm = 1
         self.soma.insert('hh')
+        for sec in self.active_sections + [self.soma]:
+            for seg in sec:
+                seg.hh.gnabar = 0.12   # Sodium conductance
+                seg.hh.gkbar = 0.036   # Potassium conductance
+                seg.hh.gl = 0.0003     # Leak conductance
+                seg.hh.el = -54.3      
         self.stim = h.IClamp(self.peripheral_axon[1](0.5))
         """if self.peripheral_axon[-1] in self.active_sections:
             self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
         else:
             self.stim = h.IClamp(self.peripheral_axon[-2](0.5))"""
         self.stim.delay = 5     # ms
-        self.stim.dur = 1       # ms
-        self.stim.amp = 0.2     # nA
+        self.stim.dur = 5       # ms
+        self.stim.amp = 2     # nA
 
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
@@ -115,7 +121,7 @@ class Sensory(Cell):
     
 
 sensory = Sensory(1,0,0,0,0)
-sensory.set_stim(delay=2, dur=1, amp=2.0)
+sensory.set_stim(delay=2, dur=5, amp=2)
 
 h.finitialize(-65)
 h.continuerun(40)
