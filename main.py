@@ -19,7 +19,6 @@ class Cell:
         h.define_shape()
         self._rotate_z(theta)
         self._set_position(x, y, z)
-        #h.celsius = 37
         
 
         self._spike_detector = h.NetCon(self.soma(0.5)._ref_v, None, sec = self.soma)
@@ -161,29 +160,27 @@ class Motor(Cell):
         self.stim = h.IClamp(self.dend(0.5))
         self.stim.delay = 5     # ms
         self.stim.dur = 1       # ms
-        self.stim.amp = 0.2     # nA
+        self.stim.amp = 0.05     # nA
 
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
         self.v_dend = h.Vector().record(self.dend(0.5)._ref_v)
         ind = -1
-        if self.axon[ind] in self.active_sections:
+        """if self.axon[ind] in self.active_sections:
             self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
         else:
-            self.v_axon = h.Vector().record(self.axon[ind-1](0.5)._ref_v)
+            self.v_axon = h.Vector().record(self.axon[ind-1](0.5)._ref_v)"""
+        self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
 
     def set_stim(self, delay=5, dur=1, amp=0.3):
         self.stim.delay = delay
         self.stim.dur = dur
         self.stim.amp = amp
 
-    
-        
-
 
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=5, amp=2.0)
+sensory.set_stim(delay=2, dur=5, amp=0.2)
 
 h.finitialize(-65)
 h.continuerun(40)
@@ -264,7 +261,7 @@ plt.show()
 
 
 motor = Motor(0, 0, 0, 0, 0)
-motor.stim.amp = 10  # Stronger if no spike
+motor.stim.amp = 0.3  # Stronger if no spike
 h.finitialize(-65)
 h.continuerun(40)
 
@@ -277,3 +274,5 @@ plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron Response")
 plt.grid()
 plt.show()
+
+print(h.celsius)
