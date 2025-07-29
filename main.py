@@ -40,31 +40,38 @@ class Cell:
                 xprime = x*c - y*s
                 yprime = x*s + y*c
                 sec.pt3dchange(i, xprime, yprime, sec.z3d(i), sec.diam3d(i))
-    def myelinated(self, L_axon, nnodes):
+    def myelinated(self, L_axon, internode_L, nnodes=-1):
         axon_sections = []
-        
-        for i in range(nnodes):
+        total_length = 0
+        n_nodes = 0
+        i = 0
+        while total_length < L_axon and (n_nodes < nnodes or nnodes == -1):
             node = h.Section(name=f'node_{i}')
             self.active_sections.append(node)
             node.insert('hh')
             node.cm = 1.0
             node.Ra = 100
             node.L = 1
+            total_length += node.L
             node.diam = 1.0
-
+            if (nnodes != -1):
+                n_nodes += 1
+            
             internode = h.Section(name=f'internode_{i}')
             internode.insert('pas')
             internode.cm = 0.04
             internode.g_pas = 1e-5
             internode.Ra = 100
-            internode.L = (L_axon-1*nnodes)/(nnodes)
+            internode.L = internode_L
             internode.diam = 1.0
+            total_length += internode.L
 
             if axon_sections:
                 internode.connect(axon_sections[-1](1))
             node.connect(internode(1))
             axon_sections.append(internode)
             axon_sections.append(node)
+            i+= 1
         return axon_sections
 
 
@@ -74,13 +81,12 @@ class Sensory(Cell):
     def _setup_morphology(self):
         self.soma = h.Section(name = 'soma', cell = self)
         
-        self.peripheral_axon = self.myelinated(5000, 5)
-        self.central_axon = self.myelinated(500,5)
+        self.peripheral_axon = self.myelinated(5000, 800)
+        self.central_axon = self.myelinated(500,90)
         self.peripheral_axon[0].connect(self.soma(0))
         self.central_axon[0].connect(self.soma(1))
         self.soma.L = self.soma.diam = 25
 
-        
     def _setup_biophysics(self):
         for sec in self.all:
             sec.Ra = 100
