@@ -130,10 +130,6 @@ class Sensory(Cell):
         self.stim.dur = dur
         self.stim.amp = amp
 
-<<<<<<< Updated upstream
-sensory = Sensory(1,0,0,0,0)
-sensory.set_stim(delay=2, dur=5, amp=2)
-=======
 class Motor(Cell):
     name = "Motor"
     def _setup_morphology(self):
@@ -188,7 +184,6 @@ class Motor(Cell):
 
 sensory = Sensory(0,0,0,0,0)
 sensory.set_stim(delay=2, dur=20, amp=2.0)
->>>>>>> Stashed changes
 
 h.finitialize(-65)
 h.continuerun(40)
@@ -206,7 +201,6 @@ plt.title("Sensory Neuron Firing")
 plt.grid()
 plt.show()
 
-<<<<<<< Updated upstream
 class MyelinatedInterneuron(Cell):
     name = "MyelinatedInterneuron"
 
@@ -257,7 +251,7 @@ interneuron.set_stim(delay=2, dur=5, amp=1)
 h.finitialize(-65)
 h.continuerun(40)
 
-import matplotlib.pyplot as plt
+
 plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
 plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
 plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
@@ -265,7 +259,10 @@ plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.legend()
 plt.title("Myelinated Interneuron Firing")
-=======
+plt.grid()
+plt.show()
+
+
 motor = Motor(0, 0, 0, 0, 0)
 motor.stim.amp = 10  # Stronger if no spike
 h.finitialize(-65)
@@ -278,6 +275,5 @@ plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron Response")
->>>>>>> Stashed changes
 plt.grid()
 plt.show()
