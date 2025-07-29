@@ -183,7 +183,7 @@ class Motor(Cell):
 
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=20, amp=2.0)
+sensory.set_stim(delay=2, dur=5, amp=2.0)
 
 h.finitialize(-65)
 h.continuerun(40)
@@ -213,7 +213,7 @@ class MyelinatedInterneuron(Cell):
         self.dendrite.diam = 2
         self.dendrite.connect(self.soma(0))
 
-        self.axon = self.myelinated(L_axon=1000, internode_L=100)
+        self.axon = self.myelinated(L_axon=1000, internode_L=100, diam=.65)
         self.axon[0].connect(self.soma(1))  # connect first internode to soma
 
         self.active_sections.extend([self.dendrite])  # axon parts already in active_sections
