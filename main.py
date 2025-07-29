@@ -3,6 +3,10 @@ from neuron.units import ms, mV
 import matplotlib.pyplot as plt
 h.load_file('stdrun.hoc')
 
+# change variables here
+
+
+
 class Cell:
     
     def __init__(self, gid, x, y, z, theta):
@@ -15,6 +19,7 @@ class Cell:
         h.define_shape()
         self._rotate_z(theta)
         self._set_position(x, y, z)
+        #h.celsius = 37
         
 
         self._spike_detector = h.NetCon(self.soma(0.5)._ref_v, None, sec = self.soma)
@@ -40,7 +45,7 @@ class Cell:
                 xprime = x*c - y*s
                 yprime = x*s + y*c
                 sec.pt3dchange(i, xprime, yprime, sec.z3d(i), sec.diam3d(i))
-    def myelinated(self, L_axon, internode_L, nnodes=-1):
+    def myelinated(self, L_axon, internode_L, diam, nnodes=-1):
         axon_sections = []
         total_length = 0
         n_nodes = 0
@@ -53,7 +58,8 @@ class Cell:
             node.Ra = 100
             node.L = 1
             total_length += node.L
-            node.diam = 1.0
+            node.diam = diam
+            node.nseg = 1
             if (nnodes != -1):
                 n_nodes += 1
             
@@ -63,7 +69,8 @@ class Cell:
             internode.g_pas = 1e-5
             internode.Ra = 100
             internode.L = internode_L
-            internode.diam = 1.0
+            internode.diam = diam
+            node.nseg = 51
             total_length += internode.L
 
             if axon_sections:
@@ -80,8 +87,8 @@ class Sensory(Cell):
     def _setup_morphology(self):
         self.soma = h.Section(name = 'soma', cell = self)
         
-        self.peripheral_axon = self.myelinated(5000, 800)
-        self.central_axon = self.myelinated(500,90)
+        self.peripheral_axon = self.myelinated(5000, 800, 1.0)
+        self.central_axon = self.myelinated(500,90, 1.0)
         self.peripheral_axon[0].connect(self.soma(0))
         self.central_axon[0].connect(self.soma(1))
         self.soma.L = self.soma.diam = 25
@@ -123,8 +130,65 @@ class Sensory(Cell):
         self.stim.dur = dur
         self.stim.amp = amp
 
+<<<<<<< Updated upstream
 sensory = Sensory(1,0,0,0,0)
 sensory.set_stim(delay=2, dur=5, amp=2)
+=======
+class Motor(Cell):
+    name = "Motor"
+    def _setup_morphology(self):
+        self.soma = h.Section(name = 'soma', cell = self)
+        self.soma.L = self.soma.diam = 30
+        self.dend = h.Section(name="dend", cell=self)
+        self.dend.L = 200
+        self.dend.diam = 2
+        self.dend.connect(self.soma(0))
+        
+        self.axon = self.myelinated(L_axon=12000, internode_L = 1000, diam=10)
+        self.axon[0].connect(self.soma(1))
+
+    def _setup_biophysics(self):
+        for sec in self.all:
+            sec.Ra = 100
+            sec.cm = 1
+        self.soma.insert("hh")
+        self.dend.insert("pas")
+        self.dend.g_pas = 1e-4
+        self.dend.e_pas = -65
+        for sec in self.active_sections + [self.soma]:
+            for seg in sec:
+                seg.hh.gnabar = 0.12   # Sodium conductance
+                seg.hh.gkbar = 0.036   # Potassium conductance
+                seg.hh.gl = 0.0003     # Leak conductance
+                seg.hh.el = -54.3      
+        
+        self.stim = h.IClamp(self.dend(0.5))
+        self.stim.delay = 5     # ms
+        self.stim.dur = 1       # ms
+        self.stim.amp = 0.2     # nA
+
+        self.t = h.Vector().record(h._ref_t)
+        self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
+        self.v_dend = h.Vector().record(self.dend(0.5)._ref_v)
+        ind = -1
+        if self.axon[ind] in self.active_sections:
+            self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
+        else:
+            self.v_axon = h.Vector().record(self.axon[ind-1](0.5)._ref_v)
+
+    def set_stim(self, delay=5, dur=1, amp=0.3):
+        self.stim.delay = delay
+        self.stim.dur = dur
+        self.stim.amp = amp
+
+    
+        
+
+
+
+sensory = Sensory(0,0,0,0,0)
+sensory.set_stim(delay=2, dur=20, amp=2.0)
+>>>>>>> Stashed changes
 
 h.finitialize(-65)
 h.continuerun(40)
@@ -142,6 +206,7 @@ plt.title("Sensory Neuron Firing")
 plt.grid()
 plt.show()
 
+<<<<<<< Updated upstream
 class MyelinatedInterneuron(Cell):
     name = "MyelinatedInterneuron"
 
@@ -200,5 +265,19 @@ plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.legend()
 plt.title("Myelinated Interneuron Firing")
+=======
+motor = Motor(0, 0, 0, 0, 0)
+motor.stim.amp = 10  # Stronger if no spike
+h.finitialize(-65)
+h.continuerun(40)
+
+plt.plot(motor.t, motor.v_dend, label="Dendrite")
+plt.plot(motor.t, motor.v_soma, label="Soma")
+plt.plot(motor.t, motor.v_axon, label="Axon terminal")
+plt.legend()
+plt.xlabel("Time (ms)")
+plt.ylabel("Membrane Potential (mV)")
+plt.title("Motor Neuron Response")
+>>>>>>> Stashed changes
 plt.grid()
 plt.show()
