@@ -74,7 +74,6 @@ class Cell:
             i+= 1
         return axon_sections
 
-
 class Sensory(Cell):
     name = "Sensory"
     
@@ -124,8 +123,6 @@ class Sensory(Cell):
         self.stim.dur = dur
         self.stim.amp = amp
 
-    
-
 sensory = Sensory(1,0,0,0,0)
 sensory.set_stim(delay=2, dur=5, amp=2)
 
@@ -142,5 +139,66 @@ plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.legend()
 plt.title("Sensory Neuron Firing")
+plt.grid()
+plt.show()
+
+class MyelinatedInterneuron(Cell):
+    name = "MyelinatedInterneuron"
+
+    def _setup_morphology(self):
+        self.soma = h.Section(name='soma', cell=self)
+        self.soma.L = self.soma.diam = 20
+
+        self.dendrite = h.Section(name='dendrite', cell=self)
+        self.dendrite.L = 100
+        self.dendrite.diam = 2
+        self.dendrite.connect(self.soma(0))
+
+        self.axon = self.myelinated(L_axon=1000, internode_L=100)
+        self.axon[0].connect(self.soma(1))  # connect first internode to soma
+
+        self.active_sections.extend([self.dendrite])  # axon parts already in active_sections
+
+    def _setup_biophysics(self):
+        for sec in [self.soma, self.dendrite]:
+            sec.Ra = 100
+            sec.cm = 1
+            sec.insert('hh')
+            for seg in sec:
+                seg.hh.gnabar = 0.12
+                seg.hh.gkbar = 0.036
+                seg.hh.gl = 0.0003
+                seg.hh.el = -65
+
+        self.t = h.Vector().record(h._ref_t)
+        self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
+        self.v_dend = h.Vector().record(self.dendrite(0.5)._ref_v)
+        self.v_axon = h.Vector().record(self.axon[3](0.5)._ref_v)  # record mid-axon
+
+        # Stimulus at dendrite
+        self.stim = h.IClamp(self.dendrite(0.5))
+        self.stim.delay = 5
+        self.stim.dur = 5
+        self.stim.amp = 0.5
+
+    def set_stim(self, delay=5, dur=1, amp=0.5):
+        self.stim.delay = delay
+        self.stim.dur = dur
+        self.stim.amp = amp
+        
+interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
+interneuron.set_stim(delay=2, dur=5, amp=1)
+
+h.finitialize(-65)
+h.continuerun(40)
+
+import matplotlib.pyplot as plt
+plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
+plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
+plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
+plt.xlabel('Time (ms)')
+plt.ylabel('Membrane Potential (mV)')
+plt.legend()
+plt.title("Myelinated Interneuron Firing")
 plt.grid()
 plt.show()
