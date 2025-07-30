@@ -1,9 +1,13 @@
+#TO DO
+#make sure inhibition/excitation works as necessary
+#tweak sensory input so that it is more realistic
+
 from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
 h.load_file('stdrun.hoc')
 
-# change variables here
+# --------------------------------- change variables here --------------------------------------------------------------
 
 V_REST = -65  
 
@@ -32,7 +36,7 @@ c_diam = 1.0            # Central axon diameter
 sensory_soma_L_diam = 25
 
 # Channel properties (HH mechanism)
-gnabar = 0.12           # Sodium conductance
+gnabar = 0.3          # Sodium conductance
 gkbar = 0.036           # Potassium conductance
 gl = 0.0003             # Leak conductance
 el = V_REST                # Leak reversal potential
@@ -76,6 +80,8 @@ syn_sm_threshold = -20
 syn_sm_delay = 1.5
 syn_sm_weight = 0.01
 
+
+# ------------------------------------------- Class definitions --------------------------------------------------------
 class Cell:
     
     def __init__(self, gid, x, y, z, theta):
@@ -255,10 +261,6 @@ class Motor(Cell):
         self.stim.amp = amp
 
 
-
-
-
-
 class MyelinatedInterneuron(Cell):
     name = "MyelinatedInterneuron"
 
@@ -303,9 +305,10 @@ class MyelinatedInterneuron(Cell):
         self.stim.dur = dur
         self.stim.amp = amp
 
+# ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-#sensory.set_stim(delay=2, dur=10, amp=0)
+sensory.set_stim(delay=2, dur=10, amp=2.0)
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 #interneuron.set_stim(delay=2, dur=5, amp=1)
@@ -349,6 +352,7 @@ nc_sm.weight[0] = syn_sm_weight
 h.finitialize(V_REST)
 h.continuerun(50)
 
+# ----------------------------------------------- Plots ------------------------------------------------------------------
 
 plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
 plt.plot(sensory.t, sensory.v_soma, label='Soma')
