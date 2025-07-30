@@ -244,24 +244,35 @@ interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 motor = Motor(0, 0, 0, 0, 0)
 #motor.stim.amp = 3  # Stronger if no spike
 
-syn_si = h.ExpSyn(interneuron.dendrite(0.5))
-syn_si.tau = 2
+syn_si = h.Exp2Syn(interneuron.dendrite(0.5))
+syn_si.tau1 = 0.3
+syn_si.tau2 = 2.0
 syn_si.e = 0
 
 nc_si = h.NetCon(sensory.soma(spike_detector_loc)._ref_v, syn_si, sec=sensory.soma)
-nc_si.threshold = 0
+nc_si.threshold = -20
 nc_si.delay = 1
 nc_si.weight[0] = 0.01 #synaptic strength
 
 #right now modeling inhibition
-syn_im = h.ExpSyn(motor.dend(0.5))
-syn_im.tau = 5
+syn_im = h.Exp2Syn(motor.dend(0.5))
+syn_im.tau1 = 0.5
+syn_im.tau2 = 5.0
 syn_im.e = -80
 nc_im = h.NetCon(interneuron.soma(spike_detector_loc)._ref_v, syn_im, sec = interneuron.soma)
 nc_im.threshold = 0
 nc_im.delay = 2         # ms
 nc_im.weight[0] = 0.02  # uS
 
+syn_sm = h.Exp2Syn(motor.dend(0.3))  # target more proximal part of dendrite
+syn_sm.tau1 = 0.3
+syn_sm.tau2 = 2.0
+syn_sm.e = 0  # excitatory
+
+nc_sm = h.NetCon(sensory.soma(spike_detector_loc)._ref_v, syn_sm, sec=sensory.soma)
+nc_sm.threshold = 0
+nc_sm.delay = 1.5
+nc_sm.weight[0] = 0.01  # tune strength as needed
 
 
 
