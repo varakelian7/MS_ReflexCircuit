@@ -18,6 +18,7 @@ node_nseg = 1
 # Internode parameters
 internode_cm = 0.04
 internode_g_pas = 1e-5
+internode_e_pas = V_REST
 internode_Ra = 100
 internode_nseg = 51
 
@@ -64,14 +65,14 @@ syn_si_weight = 0.01
 syn_im_tau1 = 0.5
 syn_im_tau2 = 5.0
 syn_im_e = -80
-syn_im_threshold = 0
+syn_im_threshold = -20
 syn_im_delay = 2
 syn_im_weight = 0.02
 
 syn_sm_tau1 = 0.3
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
-syn_sm_threshold = 0
+syn_sm_threshold = -20
 syn_sm_delay = 1.5
 syn_sm_weight = 0.01
 
@@ -134,6 +135,7 @@ class Cell:
             internode.insert('pas')
             internode.cm = internode_cm
             internode.g_pas = internode_g_pas
+            internode.e_pas = internode_e_pas
             internode.Ra = internode_Ra
             internode.L = internode_L
             internode.diam = diam
@@ -299,7 +301,7 @@ class MyelinatedInterneuron(Cell):
 
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=10, amp=3)
+#sensory.set_stim(delay=2, dur=10, amp=0)
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 #interneuron.set_stim(delay=2, dur=5, amp=1)
@@ -319,7 +321,7 @@ nc_si.weight[0] = syn_si_weight
 
 
 #right now modeling inhibition
-syn_im = h.Exp2Syn(motor.dend(0.5))
+syn_im = h.Exp2Syn(motor.dend(0.75))
 syn_im.tau1 = syn_im_tau1
 syn_im.tau2 = syn_im_tau2
 syn_im.e = syn_im_e
@@ -341,7 +343,7 @@ nc_sm.weight[0] = syn_sm_weight
 
 
 h.finitialize(V_REST)
-h.continuerun(40)
+h.continuerun(50)
 
 
 plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
