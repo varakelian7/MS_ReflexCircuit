@@ -4,8 +4,16 @@ import matplotlib.pyplot as plt
 h.load_file('stdrun.hoc')
 
 # change variables here
+spike_detector_loc = 0.5
 
-
+node_cm = 1.0
+node_Ra = 100
+node_L = 1
+node_nseg = 1
+internode_cm = 0.04
+internode_g_pas = 1e-5
+internode_Ra = 100
+internode_nseg = 51
 
 class Cell:
     
@@ -21,7 +29,7 @@ class Cell:
         self._set_position(x, y, z)
         
 
-        self._spike_detector = h.NetCon(self.soma(0.5)._ref_v, None, sec = self.soma)
+        self._spike_detector = h.NetCon(self.soma(spike_detector_loc)._ref_v, None, sec = self.soma)
         self.spike_times = h.Vector()
         self._spike_detector.record(self.spike_times)
         self._ncs = []
@@ -53,23 +61,23 @@ class Cell:
             node = h.Section(name=f'node_{i}')
             self.active_sections.append(node)
             node.insert('hh')
-            node.cm = 1.0
-            node.Ra = 100
-            node.L = 1
+            node.cm = node_cm
+            node.Ra = node_Ra
+            node.L = node_L
             total_length += node.L
             node.diam = diam
-            node.nseg = 1
+            node.nseg = node_nseg
             if (nnodes != -1):
                 n_nodes += 1
             
             internode = h.Section(name=f'internode_{i}')
             internode.insert('pas')
-            internode.cm = 0.04
-            internode.g_pas = 1e-5
-            internode.Ra = 100
+            internode.cm = internode_cm
+            internode.g_pas = internode_g_pas
+            internode.Ra = internode_Ra
             internode.L = internode_L
             internode.diam = diam
-            node.nseg = 51
+            internode.nseg = internode_nseg
             total_length += internode.L
 
             if axon_sections:
@@ -102,7 +110,7 @@ class Sensory(Cell):
                 seg.hh.gnabar = 0.12   # Sodium conductance
                 seg.hh.gkbar = 0.036   # Potassium conductance
                 seg.hh.gl = 0.0003     # Leak conductance
-                seg.hh.el = -54.3      
+                seg.hh.el = -65   
         self.stim = h.IClamp(self.peripheral_axon[1](0.5))
         """if self.peripheral_axon[-1] in self.active_sections:
             self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
@@ -114,8 +122,8 @@ class Sensory(Cell):
 
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
-        p_ind = 3
-        c_ind = 3
+        p_ind = min(3, len(self.peripheral_axon) - 1)
+        c_ind = min(3, len(self.central_axon) - 1)
         if self.peripheral_axon[p_ind] in self.active_sections:
             self.v_peripheral = h.Vector().record(self.peripheral_axon[p_ind](0.5)._ref_v)
         else:
@@ -139,8 +147,8 @@ class Motor(Cell):
         self.dend.diam = 2
         self.dend.connect(self.soma(0))
         
-        self.axon = self.myelinated(L_axon=12000, internode_L = 1000, diam=10)
-        self.axon[0].connect(self.soma(1))
+        #self.axon = self.myelinated(L_axon=5100, internode_L = 1000, diam=10)
+        #self.axon[0].connect(self.soma(1))
 
     def _setup_biophysics(self):
         for sec in self.all:
@@ -155,12 +163,12 @@ class Motor(Cell):
                 seg.hh.gnabar = 0.12   # Sodium conductance
                 seg.hh.gkbar = 0.036   # Potassium conductance
                 seg.hh.gl = 0.0003     # Leak conductance
-                seg.hh.el = -54.3      
+                seg.hh.el = -65      
         
-        self.stim = h.IClamp(self.dend(0.5))
-        self.stim.delay = 5     # ms
-        self.stim.dur = 1       # ms
-        self.stim.amp = 0.05     # nA
+        #self.stim = h.IClamp(self.dend(0.5))
+        #self.stim.delay = 5     # ms
+        #self.stim.dur = 1       # ms
+        #self.stim.amp = 0.05     # nA
 
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
@@ -170,7 +178,7 @@ class Motor(Cell):
             self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
         else:
             self.v_axon = h.Vector().record(self.axon[ind-1](0.5)._ref_v)"""
-        self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
+        #self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
 
     def set_stim(self, delay=5, dur=1, amp=0.3):
         self.stim.delay = delay
@@ -179,24 +187,8 @@ class Motor(Cell):
 
 
 
-sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=5, amp=0.2)
 
-h.finitialize(-65)
-h.continuerun(40)
 
-h.topology()
-
-import matplotlib.pyplot as plt
-plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
-plt.plot(sensory.t, sensory.v_soma, label='Soma')
-plt.plot(sensory.t, sensory.v_central, label='Central Axon')
-plt.xlabel('Time (ms)')
-plt.ylabel('Membrane Potential (mV)')
-plt.legend()
-plt.title("Sensory Neuron Firing")
-plt.grid()
-plt.show()
 
 class MyelinatedInterneuron(Cell):
     name = "MyelinatedInterneuron"
@@ -232,21 +224,60 @@ class MyelinatedInterneuron(Cell):
         self.v_axon = h.Vector().record(self.axon[3](0.5)._ref_v)  # record mid-axon
 
         # Stimulus at dendrite
-        self.stim = h.IClamp(self.dendrite(0.5))
-        self.stim.delay = 5
-        self.stim.dur = 5
-        self.stim.amp = 0.5
+        #self.stim = h.IClamp(self.dendrite(0.5))
+        #self.stim.delay = 5
+        #self.stim.dur = 5
+        #self.stim.amp = 0.5
 
     def set_stim(self, delay=5, dur=1, amp=0.5):
         self.stim.delay = delay
         self.stim.dur = dur
         self.stim.amp = amp
+
+
+sensory = Sensory(0,0,0,0,0)
+sensory.set_stim(delay=2, dur=10, amp=3)
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
-interneuron.set_stim(delay=2, dur=5, amp=1)
+#interneuron.set_stim(delay=2, dur=5, amp=1)
+
+motor = Motor(0, 0, 0, 0, 0)
+#motor.stim.amp = 3  # Stronger if no spike
+
+syn_si = h.ExpSyn(interneuron.dendrite(0.5))
+syn_si.tau = 2
+syn_si.e = 0
+
+nc_si = h.NetCon(sensory.soma(spike_detector_loc)._ref_v, syn_si, sec=sensory.soma)
+nc_si.threshold = 0
+nc_si.delay = 1
+nc_si.weight[0] = 0.01 #synaptic strength
+
+#right now modeling inhibition
+syn_im = h.ExpSyn(motor.dend(0.5))
+syn_im.tau = 5
+syn_im.e = -80
+nc_im = h.NetCon(interneuron.soma(spike_detector_loc)._ref_v, syn_im, sec = interneuron.soma)
+nc_im.threshold = 0
+nc_im.delay = 2         # ms
+nc_im.weight[0] = 0.02  # uS
+
+
+
 
 h.finitialize(-65)
 h.continuerun(40)
+
+
+plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
+plt.plot(sensory.t, sensory.v_soma, label='Soma')
+plt.plot(sensory.t, sensory.v_central, label='Central Axon')
+plt.xlabel('Time (ms)')
+plt.ylabel('Membrane Potential (mV)')
+plt.legend()
+plt.title("Sensory Neuron Firing")
+plt.grid()
+plt.show()
 
 
 plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
@@ -260,19 +291,13 @@ plt.grid()
 plt.show()
 
 
-motor = Motor(0, 0, 0, 0, 0)
-motor.stim.amp = 0.3  # Stronger if no spike
-h.finitialize(-65)
-h.continuerun(40)
 
 plt.plot(motor.t, motor.v_dend, label="Dendrite")
 plt.plot(motor.t, motor.v_soma, label="Soma")
-plt.plot(motor.t, motor.v_axon, label="Axon terminal")
+#plt.plot(motor.t, motor.v_axon, label="Axon terminal")
 plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron Response")
 plt.grid()
 plt.show()
-
-print(h.celsius)
