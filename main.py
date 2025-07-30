@@ -218,9 +218,13 @@ class Motor(Cell):
             sec.Ra = 100
             sec.cm = 1
         self.soma.insert("hh")
-        self.dend.insert("pas")
-        self.dend.g_pas = g_pas_dend
-        self.dend.e_pas = e_pas_dend
+        self.dend.insert('hh')
+        for seg in self.dend:
+            seg.hh.gnabar = 0.04
+            seg.hh.gkbar  = 0.01
+            seg.hh.gl     = gl
+            seg.hh.el     = el
+
         for sec in self.active_sections + [self.soma]:
             for seg in sec:
                 seg.hh.gnabar = gnabar
