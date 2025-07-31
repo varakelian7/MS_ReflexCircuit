@@ -26,11 +26,11 @@ internode_cm = 0.04
 internode_g_pas = 1e-5
 internode_e_pas = V_REST
 internode_Ra = 100
-internode_nseg = 51
+internode_nseg = 31
 
 # Sensory neuron geometry
 p_L = 5000              # Peripheral axon total length
-p_int_L = 800           # Peripheral internode length
+p_int_L = 500           # Peripheral internode length
 p_diam = 14            # Peripheral axon diameter
 c_L = 500               # Central axon total length
 c_int_L = 90            # Central internode length
@@ -61,26 +61,26 @@ interneuron_axon_int_L = 100
 interneuron_axon_diam = 4
 
 # Synaptic parameters
-syn_si_tau1 = 0.3
-syn_si_tau2 = 2.0
+syn_si_tau1 = 0.3 #
+syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
-syn_si_delay = 2
-syn_si_weight = 0.01
+syn_si_delay = 1 #
+syn_si_weight = 0.01 #
 
-syn_im_tau1 = 0.3
+syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 4.0
-syn_im_weight = 0.045
+syn_im_delay = 1.0
+syn_im_weight = 0.05
 
-syn_sm_tau1 = 0.3
+syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 6.512
-syn_sm_weight = 0.015
+syn_sm_delay = 6
+syn_sm_weight = 0.01
 
 
 # ------------------------------------------- Class definitions --------------------------------------------------------
@@ -182,12 +182,12 @@ class Sensory(Cell):
                 seg.hh.gl = gl
                 seg.hh.el = el
         #self.stimI = h.IClamp(self.soma(0.5))
-        #for sec in reversed(self.peripheral_axon):
-            #if sec in self.active_sections:
-                #self.stimI = h.IClamp(sec(0.5))
-                #break
+        for sec in reversed(self.peripheral_axon):
+            if sec in self.active_sections:
+                self.stimI = h.IClamp(sec(0.5))
+                break
 
-        self.stim = h.NetStim()
+        #self.stim = h.NetStim()
         """if self.peripheral_axon[-1] in self.active_sections:
             self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
         else:
@@ -321,9 +321,9 @@ class MyelinatedInterneuron(Cell):
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-#sensory.set_stim(delay=2, dur=10, amp=5)
+sensory.set_stim(delay=2, dur=10, amp=20)
 
-
+"""
 sensory.stim.start = 2    # ms
 sensory.stim.number = 10
 sensory.stim.interval = 1  # not used if number = 1
@@ -336,7 +336,7 @@ syn.e = 0  # Excitatory
 nc = h.NetCon(sensory.stim, syn)
 nc.delay = 0
 nc.weight[0] = 1  # Adjust strength
-
+"""
 
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
@@ -379,7 +379,7 @@ nc_sm.weight[0] = syn_sm_weight
 
 
 h.finitialize(V_REST)
-h.continuerun(20)
+h.continuerun(50)
 
 # ----------------------------------------------- Plots ------------------------------------------------------------------
 
