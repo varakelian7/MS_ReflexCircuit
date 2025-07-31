@@ -870,7 +870,7 @@ static const char* nmodl_file_text =
   "	ena     = 50.0  (mV)\n"
   "	ek      = -90.0 (mV)\n"
   "	el	= -90.0 (mV)\n"
-  "	celsius		(degC)\n"
+  "	celsius	= 6.3	(degC)\n"
   "	dt              (ms)\n"
   "	v               (mV)\n"
   "	vtraub=-80\n"

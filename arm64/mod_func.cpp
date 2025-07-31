@@ -6,15 +6,15 @@ extern int nrn_nobanner_;
 extern "C" {
 #endif
 
-extern void _model_ion_channels_reg(void);
+extern void _km_reg(void);
 
 void modl_reg() {
   if (!nrn_nobanner_) if (nrnmpi_myid < 1) {
     fprintf(stderr, "Additional mechanisms from files\n");
-    fprintf(stderr, " \"model_ion_channels.mod\"");
+    fprintf(stderr, " \"km.mod\"");
     fprintf(stderr, "\n");
   }
-  _model_ion_channels_reg();
+  _km_reg();
 }
 
 #if defined(__cplusplus)

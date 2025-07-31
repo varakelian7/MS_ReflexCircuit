@@ -41,7 +41,7 @@ PARAMETER {
 	ena     = 50.0  (mV)
 	ek      = -90.0 (mV)
 	el	= -90.0 (mV)
-	celsius		(degC)
+	celsius	= 6.3	(degC)
 	dt              (ms)
 	v               (mV)
 	vtraub=-80

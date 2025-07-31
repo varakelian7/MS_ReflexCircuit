@@ -1,8 +1,8 @@
-./model_ion_channels.c: ../model_ion_channels.mod
+./km.c: ../km.mod
 	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
-	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "model_ion_channels.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "km.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
 
-./model_ion_channels.o: ./model_ion_channels.c
+./km.o: ./km.c
 	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
 	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
 

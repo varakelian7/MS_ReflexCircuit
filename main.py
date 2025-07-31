@@ -23,14 +23,15 @@ node_L = 1
 node_nseg = 1
 
 # Internode parameters
-internode_cm = 0.04
+#internode_cm = 0.04
+internode_cm = 0.01
 internode_g_pas = 1e-5
 internode_e_pas = V_REST
 internode_Ra = 100
 internode_nseg = 31
 
 # Sensory neuron geometry
-p_L = 5000              # Peripheral axon total length
+p_L = 800              # Peripheral axon total length
 p_int_L = 500           # Peripheral internode length
 p_diam = 14            # Peripheral axon diameter
 c_L = 500               # Central axon total length
@@ -41,8 +42,8 @@ sensory_soma_L_diam = 25
 # Channel properties (HH mechanism)
 gnabar = 0.3          # Sodium conductance
 gkbar = 0.1           # Potassium conductance
-gl = 0.0003             # Leak conductance
-el = V_REST                # Leak reversal potential
+gl = 0.0003            # Leak conductance
+el = V_REST              # Leak reversal potential
 
 # Passive dendrites
 g_pas_dend = 1e-4
@@ -74,14 +75,14 @@ syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
 syn_im_delay = 1.0
-syn_im_weight = 0.07
+syn_im_weight = 0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
 syn_sm_delay = 1.18
-syn_sm_weight = 0.01
+syn_sm_weight = 0.02
 
 
 # ------------------------------------------- Class definitions --------------------------------------------------------
@@ -165,9 +166,9 @@ class Sensory(Cell):
     def _setup_morphology(self):
         self.soma = h.Section(name = 'soma', cell = self)
         
-        self.peripheral_axon = self.myelinated(p_L, p_int_L, p_diam)
+       #self.peripheral_axon = self.myelinated(p_L, p_int_L, p_diam)
         self.central_axon = self.myelinated(c_L, c_int_L, c_diam)
-        self.peripheral_axon[0].connect(self.soma(0))
+        #self.peripheral_axon[0].connect(self.soma(0))
         self.central_axon[0].connect(self.soma(1))
         self.soma.L = self.soma.diam = sensory_soma_L_diam
 
@@ -176,39 +177,28 @@ class Sensory(Cell):
             sec.Ra = 100
             sec.cm = 1
         self.soma.insert('hh')
-        for sec in self.active_sections + [self.soma]:
+        """for sec in self.active_sections + [self.soma]:
             for seg in sec:
                 seg.hh.gnabar = gnabar
                 seg.hh.gkbar = gkbar
                 seg.hh.gl = gl
-                seg.hh.el = el
-        #self.stimI = h.IClamp(self.soma(0.5))
-        for sec in reversed(self.peripheral_axon):
-            if sec in self.active_sections:
-                self.stimI = h.IClamp(sec(0.5))
-                break
+                seg.hh.el = el"""
+        self.stimI = h.IClamp(self.soma(0.5))
+        #for sec in reversed(self.peripheral_axon):
+        #    if sec in self.active_sections:
+        #        self.stimI = h.IClamp(sec(0.5))
+        #        break
 
         #self.stim = h.NetStim()
-        """if self.peripheral_axon[-1] in self.active_sections:
-            self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
-        else:
-            self.stim = h.IClamp(self.peripheral_axon[-2](0.5))"""
         #self.stim.delay = 5     # ms
         #self.stim.dur = 5       # ms
         #self.stim.amp = 2     # nA
 
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
-        p_ind = min(3, len(self.peripheral_axon) - 1)
-        c_ind = min(3, len(self.central_axon) - 1)
-        if self.peripheral_axon[p_ind] in self.active_sections:
-            self.v_peripheral = h.Vector().record(self.peripheral_axon[p_ind](0.5)._ref_v)
-        else:
-            self.v_peripheral = h.Vector().record(self.peripheral_axon[p_ind-1](0.5)._ref_v)
-        if self.central_axon[c_ind] in self.active_sections:
-            self.v_central = h.Vector().record(self.central_axon[c_ind](0.5)._ref_v)
-        else:
-            self.v_central = h.Vector().record(self.central_axon[c_ind-1](0.5)._ref_v)
+        #self.v_peripheral = h.Vector().record(self.peripheral_axon[-1](0.5)._ref_v)
+
+        self.v_central = h.Vector().record(self.central_axon[-1](0.5)._ref_v)
     def set_stim(self, delay=5, dur=1, amp=0.3):
         self.stimI.delay = delay
         self.stimI.dur = dur
@@ -260,10 +250,6 @@ class Motor(Cell):
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
         self.v_dend = h.Vector().record(self.dend(0.5)._ref_v)
         ind = -1
-        """if self.axon[ind] in self.active_sections:
-            self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
-        else:
-            self.v_axon = h.Vector().record(self.axon[ind-1](0.5)._ref_v)"""
         #self.v_axon = h.Vector().record(self.axon[ind](0.5)._ref_v)
 
     def set_stim(self, delay=5, dur=1, amp=0.3):
@@ -322,7 +308,7 @@ class MyelinatedInterneuron(Cell):
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=10, amp=20)
+sensory.set_stim(delay=2, dur=100, amp=1)
 
 """
 sensory.stim.start = 2    # ms
@@ -378,13 +364,14 @@ nc_sm.threshold = syn_sm_threshold
 nc_sm.delay = syn_sm_delay
 nc_sm.weight[0] = syn_sm_weight
 
+stim_amp = h.Vector().record(sensory.stimI._ref_i)
 
 h.finitialize(V_REST)
-h.continuerun(50)
+h.continuerun(100)
 
 # ----------------------------------------------- Plots ------------------------------------------------------------------
-
-plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
+plt.subplot(4,1,1)
+#plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
 plt.plot(sensory.t, sensory.v_soma, label='Soma')
 plt.plot(sensory.t, sensory.v_central, label='Central Axon')
 plt.xlabel('Time (ms)')
@@ -392,9 +379,8 @@ plt.ylabel('Membrane Potential (mV)')
 plt.legend()
 plt.title("Sensory Neuron Firing")
 plt.grid()
-plt.show()
 
-
+plt.subplot(4,1,2)
 plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
 plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
 plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
@@ -403,10 +389,9 @@ plt.ylabel('Membrane Potential (mV)')
 plt.legend()
 plt.title("Myelinated Interneuron Firing")
 plt.grid()
-plt.show()
 
 
-
+plt.subplot(4,1,3)
 #plt.plot(motor.t, motor.v_dend, label="Dendrite")
 plt.plot(motor.t, motor.v_soma, label="Soma")
 #plt.plot(motor.t, motor.v_axon, label="Axon terminal")
@@ -414,6 +399,15 @@ plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron Response")
+plt.grid()
+
+
+plt.subplot(4,1,4)
+plt.plot(sensory.t, stim_amp, label="Injected Current")
+plt.legend()
+plt.xlabel("Time (ms)")
+plt.ylabel("Injected Current (nA)")
+plt.title("Injected Stimulus")
 plt.grid()
 plt.show()
 
