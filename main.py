@@ -64,21 +64,21 @@ syn_si_tau1 = 0.3
 syn_si_tau2 = 2.0
 syn_si_e = 0
 syn_si_threshold = -20
-syn_si_delay = 1
+syn_si_delay = 2
 syn_si_weight = 0.01
 
 syn_im_tau1 = 0.3
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 2.0
-syn_im_weight = 0.04
+syn_im_delay = 4.0
+syn_im_weight = 0.06
 
 syn_sm_tau1 = 0.3
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 1.5
+syn_sm_delay = 6.5
 syn_sm_weight = 0.02
 
 
@@ -180,7 +180,13 @@ class Sensory(Cell):
                 seg.hh.gkbar = gkbar
                 seg.hh.gl = gl
                 seg.hh.el = el
-        self.stim = h.IClamp(self.soma(0.5))
+        #self.stimI = h.IClamp(self.soma(0.5))
+        #for sec in reversed(self.peripheral_axon):
+            #if sec in self.active_sections:
+                #self.stimI = h.IClamp(sec(0.5))
+                #break
+
+        self.stim = h.NetStim()
         """if self.peripheral_axon[-1] in self.active_sections:
             self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
         else:
@@ -202,9 +208,9 @@ class Sensory(Cell):
         else:
             self.v_central = h.Vector().record(self.central_axon[c_ind-1](0.5)._ref_v)
     def set_stim(self, delay=5, dur=1, amp=0.3):
-        self.stim.delay = delay
-        self.stim.dur = dur
-        self.stim.amp = amp
+        self.stimI.delay = delay
+        self.stimI.dur = dur
+        self.stimI.amp = amp
 
 class Motor(Cell):
     name = "Motor"
@@ -309,7 +315,23 @@ class MyelinatedInterneuron(Cell):
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=10, amp=0.5)
+#sensory.set_stim(delay=2, dur=10, amp=5)
+
+
+sensory.stim.start = 2    # ms
+sensory.stim.number = 10
+sensory.stim.interval = 1  # not used if number = 1
+sensory.stim.noise = 0.2
+
+syn = h.ExpSyn(sensory.soma(0.5))
+syn.tau = 0.5
+syn.e = 0  # Excitatory
+
+nc = h.NetCon(sensory.stim, syn)
+nc.delay = 0
+nc.weight[0] = 1  # Adjust strength
+
+
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 #interneuron.set_stim(delay=2, dur=5, amp=1)
@@ -387,3 +409,7 @@ plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron Response")
 plt.grid()
 plt.show()
+
+
+
+print(list(sensory.spike_times))
