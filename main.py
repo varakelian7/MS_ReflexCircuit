@@ -7,6 +7,7 @@ from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
 h.load_file('stdrun.hoc')
+#h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
 
 # --------------------------------- change variables here --------------------------------------------------------------
 
@@ -234,6 +235,8 @@ class Motor(Cell):
             sec.cm = 1
         self.soma.insert("hh")
         self.dend.insert('hh')
+        #self.soma.insert('kad')
+        #self.soma.gkbar_kad = 0.005
         for seg in self.dend:
             seg.hh.gnabar = 0.04
             seg.hh.gkbar  = 0.01
@@ -290,12 +293,15 @@ class MyelinatedInterneuron(Cell):
             sec.Ra = 100
             sec.cm = 1
             sec.insert('hh')
+            
             for seg in sec:
                 seg.hh.gnabar = gnabar
                 seg.hh.gkbar = gkbar
                 seg.hh.gl = gl
                 seg.hh.el = el
 
+        #self.soma.insert('kad')
+        #self.soma.gkbar_kad = 0.01
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
         self.v_dend = h.Vector().record(self.dendrite(0.5)._ref_v)
