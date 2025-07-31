@@ -66,20 +66,20 @@ syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
 syn_si_delay = 1 #
-syn_si_weight = 0.01 #
+syn_si_weight = 0.03 #
 
 syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
 syn_im_delay = 1.0
-syn_im_weight = 0.05
+syn_im_weight = 0.07
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 6
+syn_sm_delay = 1.18
 syn_sm_weight = 0.01
 
 
@@ -406,7 +406,7 @@ plt.show()
 
 
 
-plt.plot(motor.t, motor.v_dend, label="Dendrite")
+#plt.plot(motor.t, motor.v_dend, label="Dendrite")
 plt.plot(motor.t, motor.v_soma, label="Soma")
 #plt.plot(motor.t, motor.v_axon, label="Axon terminal")
 plt.legend()
