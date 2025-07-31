@@ -1,6 +1,7 @@
 #TO DO
 #make sure inhibition/excitation works as necessary
 #tweak sensory input so that it is more realistic
+#slow potassium channels on modeldb
 
 from neuron import h, gui
 from neuron.units import ms, mV
@@ -37,7 +38,7 @@ sensory_soma_L_diam = 25
 
 # Channel properties (HH mechanism)
 gnabar = 0.3          # Sodium conductance
-gkbar = 0.036           # Potassium conductance
+gkbar = 0.1           # Potassium conductance
 gl = 0.0003             # Leak conductance
 el = V_REST                # Leak reversal potential
 
@@ -66,19 +67,19 @@ syn_si_threshold = -20
 syn_si_delay = 1
 syn_si_weight = 0.01
 
-syn_im_tau1 = 0.5
+syn_im_tau1 = 0.3
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 2
-syn_im_weight = 0.02
+syn_im_delay = 2.0
+syn_im_weight = 0.04
 
 syn_sm_tau1 = 0.3
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
 syn_sm_delay = 1.5
-syn_sm_weight = 0.01
+syn_sm_weight = 0.02
 
 
 # ------------------------------------------- Class definitions --------------------------------------------------------
@@ -179,7 +180,7 @@ class Sensory(Cell):
                 seg.hh.gkbar = gkbar
                 seg.hh.gl = gl
                 seg.hh.el = el
-        self.stim = h.IClamp(self.peripheral_axon[1](0.5))
+        self.stim = h.IClamp(self.soma(0.5))
         """if self.peripheral_axon[-1] in self.active_sections:
             self.stim = h.IClamp(self.peripheral_axon[-1](0.5))
         else:
@@ -308,7 +309,7 @@ class MyelinatedInterneuron(Cell):
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=10, amp=2.0)
+sensory.set_stim(delay=2, dur=10, amp=0.5)
         
 interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 #interneuron.set_stim(delay=2, dur=5, amp=1)
