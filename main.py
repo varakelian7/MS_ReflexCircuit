@@ -30,7 +30,7 @@ internode_nseg = 51
 # Sensory neuron geometry
 p_L = 5000              # Peripheral axon total length
 p_int_L = 800           # Peripheral internode length
-p_diam = 1.0            # Peripheral axon diameter
+p_diam = 14            # Peripheral axon diameter
 c_L = 500               # Central axon total length
 c_int_L = 90            # Central internode length
 c_diam = 1.0            # Central axon diameter
@@ -55,9 +55,9 @@ motor_dend_diam = 2
 interneuron_soma_L_diam = 20
 interneuron_dend_L = 100
 interneuron_dend_diam = 2
-interneuron_axon_L = 1000
+interneuron_axon_L = 15
 interneuron_axon_int_L = 100
-interneuron_axon_diam = 0.65
+interneuron_axon_diam = 4
 
 # Synaptic parameters
 syn_si_tau1 = 0.3
@@ -72,14 +72,14 @@ syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
 syn_im_delay = 4.0
-syn_im_weight = 0.06
+syn_im_weight = 0.045
 
 syn_sm_tau1 = 0.3
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 6.5
-syn_sm_weight = 0.02
+syn_sm_delay = 6.512
+syn_sm_weight = 0.015
 
 
 # ------------------------------------------- Class definitions --------------------------------------------------------
@@ -373,7 +373,7 @@ nc_sm.weight[0] = syn_sm_weight
 
 
 h.finitialize(V_REST)
-h.continuerun(50)
+h.continuerun(20)
 
 # ----------------------------------------------- Plots ------------------------------------------------------------------
 
