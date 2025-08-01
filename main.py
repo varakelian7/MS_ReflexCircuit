@@ -22,26 +22,26 @@ syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
 syn_si_delay = 1 #
-syn_si_weight = 0.03 #
+syn_si_weight = 0.03 #0.03
 
 syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 1.0
-syn_im_weight = 0.015
+syn_im_delay = 1.0 #1
+syn_im_weight = 0.015 #0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
 syn_sm_delay = 1.18
-syn_sm_weight = 0.02
+syn_sm_weight = 0.02 #0.02
 
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=100, amp=1)
+sensory.set_stim(delay=2, dur=100, amp=0.5)
 
 """
 sensory.stim.start = 2    # ms
@@ -87,7 +87,7 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 
-syn_sm = h.Exp2Syn(motor.dend(0.5))
+syn_sm = h.Exp2Syn(motor.dend(0.5)) 
 syn_sm.tau1 = syn_sm_tau1
 syn_sm.tau2 = syn_sm_tau2
 syn_sm.e = syn_sm_e
@@ -141,6 +141,20 @@ plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Injected Current (nA)")
 plt.title("Injected Stimulus")
+plt.grid()
+plt.show()
+
+plt.figure()
+for idx, sec in enumerate(sensory.active_sections):
+    v = h.Vector().record(sec(0.5)._ref_v)
+    t = h.Vector().record(h._ref_t)
+    h.finitialize(V_REST)
+    h.continuerun(100)
+    plt.plot(t, v, label=f'central_axon[{idx}]')
+plt.legend()
+plt.title('Voltage along central axon')
+plt.xlabel('Time (ms)')
+plt.ylabel('Membrane Potential (mV)')
 plt.grid()
 plt.show()
 

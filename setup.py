@@ -19,10 +19,10 @@ node_nseg = 1
 
 # Internode parameters
 #internode_cm = 0.04
-internode_cm = 0.01
+internode_cm = 0.3
 internode_g_pas = 1e-5
 internode_e_pas = V_REST
-internode_Ra = 100
+internode_Ra = 50
 internode_nseg = 31
 
 # Sensory neuron geometry
@@ -53,8 +53,8 @@ motor_dend_diam = 2
 interneuron_soma_L_diam = 20
 interneuron_dend_L = 100
 interneuron_dend_diam = 2
-interneuron_axon_L = 100
-interneuron_axon_int_L = 15
+interneuron_axon_L = 500
+interneuron_axon_int_L = 50
 interneuron_axon_diam = 4
 
 
@@ -106,6 +106,8 @@ class Cell:
             node = h.Section(name=f'node_{i}')
             self.active_sections.append(node)
             node.insert('hh')
+            node.gnabar_hh = 1.2
+            node.gkbar_hh = 0.036
             node.cm = node_cm
             node.Ra = node_Ra
             node.L = node_L
