@@ -104,29 +104,29 @@ syn_si.tau1 = syn_si_tau1
 syn_si.tau2 = syn_si_tau2
 syn_si.e = syn_si_e
 
-nc_si = h.NetCon(sensory.soma(spike_detector_loc)._ref_v, syn_si, sec=sensory.soma)
+nc_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_si, sec=sensory.central_axon[-1])
 nc_si.threshold = syn_si_threshold
 nc_si.delay = syn_si_delay
 nc_si.weight[0] = syn_si_weight
 
 
 #right now modeling inhibition
-syn_im = h.Exp2Syn(motor.dend(0.75))
+syn_im = h.Exp2Syn(motor.dend(0.5))
 syn_im.tau1 = syn_im_tau1
 syn_im.tau2 = syn_im_tau2
 syn_im.e = syn_im_e
-nc_im = h.NetCon(interneuron.soma(spike_detector_loc)._ref_v, syn_im, sec = interneuron.soma)
+nc_im = h.NetCon(interneuron.axon[-1](0.5)._ref_v, syn_im, sec = interneuron.axon[-1])
 nc_im.threshold = syn_im_threshold
 nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 
-syn_sm = h.Exp2Syn(motor.dend(0.3))  # target more proximal part of dendrite
+syn_sm = h.Exp2Syn(motor.dend(0.5))
 syn_sm.tau1 = syn_sm_tau1
 syn_sm.tau2 = syn_sm_tau2
 syn_sm.e = syn_sm_e
 
-nc_sm = h.NetCon(sensory.soma(spike_detector_loc)._ref_v, syn_sm, sec=sensory.soma)
+nc_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_sm, sec=sensory.central_axon[-1])
 nc_sm.threshold = syn_sm_threshold
 nc_sm.delay = syn_sm_delay
 nc_sm.weight[0] = syn_sm_weight
