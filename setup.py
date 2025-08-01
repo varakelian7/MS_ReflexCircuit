@@ -53,8 +53,8 @@ motor_dend_diam = 2
 interneuron_soma_L_diam = 20
 interneuron_dend_L = 100
 interneuron_dend_diam = 2
-interneuron_axon_L = 15
-interneuron_axon_int_L = 100
+interneuron_axon_L = 100
+interneuron_axon_int_L = 15
 interneuron_axon_diam = 4
 
 
@@ -244,7 +244,7 @@ class MyelinatedInterneuron(Cell):
         self.dendrite.diam = 2
         self.dendrite.connect(self.soma(0))
 
-        self.axon = self.myelinated(L_axon=1000, internode_L=100, diam=.65)
+        self.axon = self.myelinated(L_axon=interneuron_axon_L, internode_L=interneuron_axon_int_L, diam=interneuron_axon_diam)
         self.axon[0].connect(self.soma(1))  # connect first internode to soma
 
         self.active_sections.extend([self.dendrite])  # axon parts already in active_sections

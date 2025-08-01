@@ -9,7 +9,7 @@ from neuron.units import ms, mV
 import matplotlib.pyplot as plt
 h.load_file('stdrun.hoc')
 #h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
-from setup import Cell, Sensory, Motor, MyelinatedInterneuron
+from setup import Sensory, Motor, MyelinatedInterneuron
 
 V_REST = -65  
 
@@ -110,7 +110,7 @@ plt.plot(sensory.t, sensory.v_central, label='Central Axon')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.legend()
-plt.title("Sensory Neuron Firing")
+plt.title("Sensory Neuron")
 plt.grid()
 
 plt.subplot(4,1,2)
@@ -120,7 +120,7 @@ plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 plt.legend()
-plt.title("Myelinated Interneuron Firing")
+plt.title("Interneuron")
 plt.grid()
 
 
@@ -131,7 +131,7 @@ plt.plot(motor.t, motor.v_soma, label="Soma")
 plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Membrane Potential (mV)")
-plt.title("Motor Neuron Response")
+plt.title("Motor Neuron")
 plt.grid()
 
 
