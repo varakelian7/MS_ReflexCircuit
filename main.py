@@ -7,6 +7,7 @@
 from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
+import numpy as np
 h.load_file('stdrun.hoc')
 #h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
 from setup import Sensory, Motor, MyelinatedInterneuron
@@ -14,6 +15,8 @@ from setup import Sensory, Motor, MyelinatedInterneuron
 V_REST = -65  
 
 spike_detector_loc = 0.5
+
+SIM_DUR = 500
 
 
 # Synaptic parameters
@@ -41,7 +44,7 @@ syn_sm_weight = 0.02 #0.02
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=100, amp=0.5)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.5)
 
 """
 sensory.stim.start = 2    # ms
@@ -99,27 +102,48 @@ nc_sm.weight[0] = syn_sm_weight
 
 stim_amp = h.Vector().record(sensory.stimI._ref_i)
 
+#random noise:
+s_noise = h.IClamp(sensory.soma(0.5))
+s_noise.delay = 0
+s_noise.dur = SIM_DUR
+#i_noise
+#m_noise
+
+dt = 0.1  # ms, same as h.dt
+tstop = SIM_DUR  # ms
+npts = int(tstop / dt)
+
+# Generate Gaussian noise current: mean = 0, std = 0.05 nA
+noise_current = np.random.normal(loc=0.0, scale=0.75, size=npts)
+time_vector = np.arange(0, tstop, dt)
+
+vec_i = h.Vector(noise_current)
+vec_t = h.Vector(time_vector)
+
+vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
+
+
 h.finitialize(V_REST)
-h.continuerun(100)
+h.continuerun(SIM_DUR)
 
 # ----------------------------------------------- Plots ------------------------------------------------------------------
 plt.subplot(4,1,1)
 #plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
 plt.plot(sensory.t, sensory.v_soma, label='Soma')
-plt.plot(sensory.t, sensory.v_central, label='Central Axon')
+#plt.plot(sensory.t, sensory.v_central, label='Central Axon')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
-plt.legend()
+#plt.legend()
 plt.title("Sensory Neuron")
 plt.grid()
 
 plt.subplot(4,1,2)
 plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
-plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
-plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
+#plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
+#plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
-plt.legend()
+#plt.legend()
 plt.title("Interneuron")
 plt.grid()
 
@@ -128,7 +152,7 @@ plt.subplot(4,1,3)
 #plt.plot(motor.t, motor.v_dend, label="Dendrite")
 plt.plot(motor.t, motor.v_soma, label="Soma")
 #plt.plot(motor.t, motor.v_axon, label="Axon terminal")
-plt.legend()
+#plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Membrane Potential (mV)")
 plt.title("Motor Neuron")
@@ -137,27 +161,13 @@ plt.grid()
 
 plt.subplot(4,1,4)
 plt.plot(sensory.t, stim_amp, label="Injected Current")
-plt.legend()
+#plt.legend()
 plt.xlabel("Time (ms)")
 plt.ylabel("Injected Current (nA)")
 plt.title("Injected Stimulus")
 plt.grid()
 plt.show()
 
-plt.figure()
-for idx, sec in enumerate(sensory.active_sections):
-    v = h.Vector().record(sec(0.5)._ref_v)
-    t = h.Vector().record(h._ref_t)
-    h.finitialize(V_REST)
-    h.continuerun(100)
-    plt.plot(t, v, label=f'central_axon[{idx}]')
-plt.legend()
-plt.title('Voltage along central axon')
-plt.xlabel('Time (ms)')
-plt.ylabel('Membrane Potential (mV)')
-plt.grid()
-plt.show()
 
 
-
-print(list(sensory.spike_times))
+print("Number of spikes: ", len(list(motor.spike_times)))
