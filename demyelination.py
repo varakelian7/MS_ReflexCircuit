@@ -148,7 +148,7 @@ tstop = SIM_DUR  # ms
 npts = int(tstop / dt)
 
 # Generate Gaussian noise current: mean = 0, std = 0.05 nA
-noise_current = np.random.normal(loc=0.0, scale=0.75, size=npts)
+noise_current = np.random.normal(loc=0.0, scale=0.2, size=npts)
 time_vector = np.arange(0, tstop, dt)
 
 vec_i = h.Vector(noise_current)
