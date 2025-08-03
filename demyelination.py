@@ -43,7 +43,7 @@ syn_sm_weight = 0.02
 sensory = Sensory(0,0,0,0,0)
 
 
-sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.5)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.4)
 
 """
 sensory.stim.start = 2    # ms
@@ -110,6 +110,13 @@ syn_si.tau1 = syn_si_tau1
 syn_si.tau2 = syn_si_tau2
 syn_si.e = syn_si_e
 
+syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
+nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
+nc_nmda_si.threshold = 0  # or whatever spike threshold you're using
+nc_nmda_si.weight[0] = 0.001
+
+
+
 nc_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_si, sec=sensory.central_axon[-1])
 nc_si.threshold = syn_si_threshold
 nc_si.delay = syn_si_delay
@@ -131,6 +138,13 @@ syn_sm = h.Exp2Syn(motor.dend(0.5))
 syn_sm.tau1 = syn_sm_tau1
 syn_sm.tau2 = syn_sm_tau2
 syn_sm.e = syn_sm_e
+
+syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
+nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
+nc_nmda_sm.threshold = 0  # or whatever spike threshold you're using
+nc_nmda_sm.weight[0] = 0.001
+
+
 
 nc_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_sm, sec=sensory.central_axon[-1])
 nc_sm.threshold = syn_sm_threshold

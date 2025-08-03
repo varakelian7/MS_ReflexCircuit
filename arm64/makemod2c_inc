@@ -1,8 +1,32 @@
-./km.c: /Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/km.mod
+./gaba_b.c: ../gaba_b.mod
 	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
-	(cd "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "km.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "gaba_b.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+
+./gaba_b.o: ./gaba_b.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./km.c: ../km.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "km.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
 
 ./km.o: ./km.c
 	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
-	$(COMPILE) -I"/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit" $(INCLUDES) -fPIC -c $< -o $@
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./model_ion_channels.c: ../model_ion_channels.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "model_ion_channels.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+
+./model_ion_channels.o: ./model_ion_channels.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./nmda.c: ../nmda.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "nmda.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+
+./nmda.o: ./nmda.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
 
