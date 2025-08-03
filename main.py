@@ -11,7 +11,9 @@ import numpy as np
 h.load_file('stdrun.hoc')
 #h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
 from setup import Sensory, Motor, MyelinatedInterneuron
+#h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
 h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
+
 
 V_REST = -65  
 

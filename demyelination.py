@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 h.load_file('stdrun.hoc')
 from setup import Sensory, Motor, MyelinatedInterneuron
+h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
+
+
 
 V_REST = -65  
 
