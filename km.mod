@@ -31,7 +31,7 @@ PARAMETER {
 	qa   = 9	(mV)		: inf slope		
 	Ra   = 0.001	(/ms)		: max act rate  (slow)
 	Rb   = 0.001	(/ms)		: max deact rate  (slow)
-	temp = 23	(degC)		: original temp 	
+	temp = 6.3	(degC)		: original temp 	
 	q10  = 2.3			: temperature sensitivity
 	vmin = -120	(mV)
 	vmax = 100	(mV)

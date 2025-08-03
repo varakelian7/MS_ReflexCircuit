@@ -11,7 +11,7 @@ extern void _km_reg(void);
 void modl_reg() {
   if (!nrn_nobanner_) if (nrnmpi_myid < 1) {
     fprintf(stderr, "Additional mechanisms from files\n");
-    fprintf(stderr, " \"km.mod\"");
+    fprintf(stderr, " \"/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/km.mod\"");
     fprintf(stderr, "\n");
   }
   _km_reg();

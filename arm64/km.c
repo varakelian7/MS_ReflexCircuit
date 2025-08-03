@@ -128,7 +128,7 @@ extern void hoc_reg_nmodl_filename(int, const char*);
 #define tadj tadj_km
  double tadj = 0;
 #define temp temp_km
- double temp = 23;
+ double temp = 6.3;
 #define vmax vmax_km
  double vmax = 100;
 #define vmin vmin_km
@@ -529,7 +529,7 @@ static const char* nmodl_file_text =
   "	qa   = 9	(mV)		: inf slope		\n"
   "	Ra   = 0.001	(/ms)		: max act rate  (slow)\n"
   "	Rb   = 0.001	(/ms)		: max deact rate  (slow)\n"
-  "	temp = 23	(degC)		: original temp 	\n"
+  "	temp = 6.3	(degC)		: original temp 	\n"
   "	q10  = 2.3			: temperature sensitivity\n"
   "	vmin = -120	(mV)\n"
   "	vmax = 100	(mV)\n"

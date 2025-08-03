@@ -11,12 +11,13 @@ import numpy as np
 h.load_file('stdrun.hoc')
 #h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
 from setup import Sensory, Motor, MyelinatedInterneuron
+h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
 
 V_REST = -65  
 
 spike_detector_loc = 0.5
 
-SIM_DUR = 500
+SIM_DUR = 1000
 
 
 # Synaptic parameters
@@ -114,13 +115,14 @@ tstop = SIM_DUR  # ms
 npts = int(tstop / dt)
 
 # Generate Gaussian noise current: mean = 0, std = 0.05 nA
-noise_current = np.random.normal(loc=0.0, scale=0.2, size=npts)
+noise_current = np.random.normal(loc=0.0, scale=0.17, size=npts)
 time_vector = np.arange(0, tstop, dt)
 
 vec_i = h.Vector(noise_current)
 vec_t = h.Vector(time_vector)
 
 vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
+
 
 
 h.finitialize(V_REST)

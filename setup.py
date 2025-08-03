@@ -1,3 +1,4 @@
+from platform import node
 from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
@@ -9,6 +10,7 @@ V_REST = -65
 
 spike_detector_loc = 0.5
 
+gbar_km = 0.00775
 
 # Node parameters
 node_cm = 1.0
@@ -106,6 +108,8 @@ class Cell:
             node = h.Section(name=f'node_{i}')
             self.active_sections.append(node)
             node.insert('hh')
+            node.insert('km')
+            node(0.5).gbar_km = gbar_km
             node.gnabar_hh = 1.2
             node.gkbar_hh = 0.036
             node.cm = node_cm
@@ -153,6 +157,8 @@ class Sensory(Cell):
             sec.Ra = 100
             sec.cm = 1
         self.soma.insert('hh')
+        self.soma.insert('km')
+        self.soma(0.5).gbar_km = gbar_km
         """for sec in self.active_sections + [self.soma]:
             for seg in sec:
                 seg.hh.gnabar = gnabar
@@ -202,8 +208,9 @@ class Motor(Cell):
             sec.cm = 1
         self.soma.insert("hh")
         self.dend.insert('hh')
-        #self.soma.insert('kad')
-        #self.soma.gkbar_kad = 0.005
+        self.soma.insert('km')
+        self.soma(0.5).gbar_km = gbar_km
+
         for seg in self.dend:
             seg.hh.gnabar = 0.04
             seg.hh.gkbar  = 0.01
@@ -263,8 +270,9 @@ class MyelinatedInterneuron(Cell):
                 seg.hh.gl = gl
                 seg.hh.el = el
 
-        #self.soma.insert('kad')
-        #self.soma.gkbar_kad = 0.01
+        self.soma.insert('km')
+        self.soma(0.5).gbar_km = gbar_km
+
         self.t = h.Vector().record(h._ref_t)
         self.v_soma = h.Vector().record(self.soma(0.5)._ref_v)
         self.v_dend = h.Vector().record(self.dendrite(0.5)._ref_v)
