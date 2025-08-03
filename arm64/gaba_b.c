@@ -1,6 +1,6 @@
 /* Created by Language version: 7.7.0 */
-/* NOT VECTORIZED */
-#define NRN_VECTORIZED 0
+/* VECTORIZED */
+#define NRN_VECTORIZED 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -22,56 +22,59 @@ extern int _method3;
 extern double hoc_Exp(double);
 #endif
  
-#define nrn_init _nrn_init__GABAb
-#define _nrn_initial _nrn_initial__GABAb
-#define nrn_cur _nrn_cur__GABAb
-#define _nrn_current _nrn_current__GABAb
-#define nrn_jacob _nrn_jacob__GABAb
-#define nrn_state _nrn_state__GABAb
-#define _net_receive _net_receive__GABAb 
-#define bindkin bindkin__GABAb 
-#define release release__GABAb 
+#define nrn_init _nrn_init__GABAB
+#define _nrn_initial _nrn_initial__GABAB
+#define nrn_cur _nrn_cur__GABAB
+#define _nrn_current _nrn_current__GABAB
+#define nrn_jacob _nrn_jacob__GABAB
+#define nrn_state _nrn_state__GABAB
+#define _net_receive _net_receive__GABAB 
+#define state state__GABAB 
  
-#define _threadargscomma_ /**/
-#define _threadargsprotocomma_ /**/
-#define _threadargs_ /**/
-#define _threadargsproto_ /**/
+#define _threadargscomma_ _p, _ppvar, _thread, _nt,
+#define _threadargsprotocomma_ double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt,
+#define _threadargs_ _p, _ppvar, _thread, _nt
+#define _threadargsproto_ double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt
  	/*SUPPRESS 761*/
 	/*SUPPRESS 762*/
 	/*SUPPRESS 763*/
 	/*SUPPRESS 765*/
 	 extern double *getarg(int);
- static double *_p; static Datum *_ppvar;
+ /* Thread safe. No static _p or _ppvar. */
  
-#define t nrn_threads->_t
-#define dt nrn_threads->_dt
-#define gmax _p[0]
-#define gmax_columnindex 0
-#define i _p[1]
-#define i_columnindex 1
-#define g _p[2]
-#define g_columnindex 2
-#define C _p[3]
-#define C_columnindex 3
-#define lastrelease _p[4]
-#define lastrelease_columnindex 4
-#define TimeCount _p[5]
-#define TimeCount_columnindex 5
-#define R _p[6]
-#define R_columnindex 6
-#define G _p[7]
-#define G_columnindex 7
-#define Gn _p[8]
-#define Gn_columnindex 8
-#define DR _p[9]
-#define DR_columnindex 9
-#define DG _p[10]
-#define DG_columnindex 10
-#define _g _p[11]
-#define _g_columnindex 11
+#define t _nt->_t
+#define dt _nt->_dt
+#define gbar _p[0]
+#define gbar_columnindex 0
+#define e _p[1]
+#define e_columnindex 1
+#define tau_r _p[2]
+#define tau_r_columnindex 2
+#define tau_d _p[3]
+#define tau_d_columnindex 3
+#define i _p[4]
+#define i_columnindex 4
+#define factor _p[5]
+#define factor_columnindex 5
+#define A _p[6]
+#define A_columnindex 6
+#define B _p[7]
+#define B_columnindex 7
+#define g _p[8]
+#define g_columnindex 8
+#define DA _p[9]
+#define DA_columnindex 9
+#define DB _p[10]
+#define DB_columnindex 10
+#define v _p[11]
+#define v_columnindex 11
+#define _g _p[12]
+#define _g_columnindex 12
+#define _tsav _p[13]
+#define _tsav_columnindex 13
 #define _nd_area  *_ppvar[0]._pval
-#define pre	*_ppvar[2]._pval
-#define _p_pre	_ppvar[2]._pval
+#define _ion_cai	*_ppvar[2]._pval
+#define _ion_cao	*_ppvar[3]._pval
  
 #if MAC
 #if !defined(v)
@@ -85,10 +88,11 @@ extern double hoc_Exp(double);
 #if defined(__cplusplus)
 extern "C" {
 #endif
- static int hoc_nrnpointerindex =  2;
+ static int hoc_nrnpointerindex =  -1;
+ static Datum* _extcall_thread;
+ static Prop* _extcall_prop;
  /* external NEURON variables */
  /* declaration of user functions */
- static double _hoc_release(void*);
  static int _mechtype;
 extern void _nrn_cacheloop_reg(int, int);
 extern void hoc_register_prop_size(int, int, int);
@@ -122,7 +126,7 @@ extern void hoc_reg_nmodl_filename(int, const char*);
 }
  extern void _nrn_setdata_reg(int, void(*)(Prop*));
  static void _setdata(Prop* _prop) {
- _p = _prop->param; _ppvar = _prop->dparam;
+ _extcall_prop = _prop;
  }
  static void _hoc_setdata(void* _vptr) { Prop* _prop;
  _prop = ((Point_process*)_vptr)->_prop;
@@ -136,70 +140,29 @@ extern void hoc_reg_nmodl_filename(int, const char*);
  "loc", _hoc_loc_pnt,
  "has_loc", _hoc_has_loc,
  "get_loc", _hoc_get_loc_pnt,
- "release", _hoc_release,
  0, 0
 };
  /* declare global and static user variables */
-#define Cdur Cdur_GABAb
- double Cdur = 0.3;
-#define Cmax Cmax_GABAb
- double Cmax = 0.5;
-#define Deadtime Deadtime_GABAb
- double Deadtime = 1;
-#define Erev Erev_GABAb
- double Erev = -95;
-#define KD KD_GABAb
- double KD = 100;
-#define K4 K4_GABAb
- double K4 = 0.033;
-#define K3 K3_GABAb
- double K3 = 0.098;
-#define K2 K2_GABAb
- double K2 = 0.0013;
-#define K1 K1_GABAb
- double K1 = 0.52;
-#define Prethresh Prethresh_GABAb
- double Prethresh = 0;
-#define n n_GABAb
- double n = 4;
  /* some parameters have upper and lower limits */
  static HocParmLimits _hoc_parm_limits[] = {
  0,0,0
 };
  static HocParmUnits _hoc_parm_units[] = {
- "Cmax_GABAb", "mM",
- "Cdur_GABAb", "ms",
- "Deadtime_GABAb", "ms",
- "K1_GABAb", "/ms",
- "K2_GABAb", "/ms",
- "K3_GABAb", "/ms",
- "K4_GABAb", "/ms",
- "Erev_GABAb", "mV",
- "gmax", "umho",
+ "gbar", "uS",
+ "e", "mV",
+ "tau_r", "ms",
+ "tau_d", "ms",
+ "A", "uS",
+ "B", "uS",
  "i", "nA",
- "g", "umho",
- "C", "mM",
- "lastrelease", "ms",
- "TimeCount", "ms",
+ "factor", "1",
  0,0
 };
- static double G0 = 0;
- static double R0 = 0;
- static double delta_t = 1;
- static double v = 0;
+ static double A0 = 0;
+ static double B0 = 0;
+ static double delta_t = 0.01;
  /* connect global user variables to hoc */
  static DoubScal hoc_scdoub[] = {
- "Cmax_GABAb", &Cmax_GABAb,
- "Cdur_GABAb", &Cdur_GABAb,
- "Prethresh_GABAb", &Prethresh_GABAb,
- "Deadtime_GABAb", &Deadtime_GABAb,
- "K1_GABAb", &K1_GABAb,
- "K2_GABAb", &K2_GABAb,
- "K3_GABAb", &K3_GABAb,
- "K4_GABAb", &K4_GABAb,
- "KD_GABAb", &KD_GABAb,
- "n_GABAb", &n_GABAb,
- "Erev_GABAb", &Erev_GABAb,
  0,0
 };
  static DoubVec hoc_vdoub[] = {
@@ -220,25 +183,25 @@ static void _ode_map(int, double**, double**, double*, Datum*, double*, int);
 static void _ode_spec(NrnThread*, _Memb_list*, int);
 static void _ode_matsol(NrnThread*, _Memb_list*, int);
  
-#define _cvode_ieq _ppvar[3]._i
+#define _cvode_ieq _ppvar[4]._i
  static void _ode_matsol_instance1(_threadargsproto_);
  /* connect range variables in _p that hoc is supposed to know about */
  static const char *_mechanism[] = {
  "7.7.0",
-"GABAb",
- "gmax",
+"GABAB",
+ "gbar",
+ "e",
+ "tau_r",
+ "tau_d",
  0,
  "i",
- "g",
- "C",
- "lastrelease",
- "TimeCount",
+ "factor",
  0,
- "R",
- "G",
+ "A",
+ "B",
  0,
- "pre",
  0};
+ static Symbol* _ca_sym;
  
 extern Prop* need_memb(Symbol*);
 
@@ -250,17 +213,24 @@ static void nrn_alloc(Prop* _prop) {
 	_p = nrn_point_prop_->param;
 	_ppvar = nrn_point_prop_->dparam;
  }else{
- 	_p = nrn_prop_data_alloc(_mechtype, 12, _prop);
+ 	_p = nrn_prop_data_alloc(_mechtype, 14, _prop);
  	/*initialize range parameters*/
- 	gmax = 0;
+ 	gbar = 0.0005;
+ 	e = -95;
+ 	tau_r = 50;
+ 	tau_d = 300;
   }
  	_prop->param = _p;
- 	_prop->param_size = 12;
+ 	_prop->param_size = 14;
   if (!nrn_point_prop_) {
- 	_ppvar = nrn_prop_datum_alloc(_mechtype, 4, _prop);
+ 	_ppvar = nrn_prop_datum_alloc(_mechtype, 5, _prop);
   }
  	_prop->dparam = _ppvar;
  	/*connect ionic variables to this model*/
+ prop_ion = need_memb(_ca_sym);
+ nrn_promote(prop_ion, 1, 0);
+ 	_ppvar[2]._pval = &prop_ion->param[1]; /* cai */
+ 	_ppvar[3]._pval = &prop_ion->param[2]; /* cao */
  
 }
  static void _initlists();
@@ -269,119 +239,107 @@ static void nrn_alloc(Prop* _prop) {
  static HocStateTolerance _hoc_state_tol[] = {
  0,0
 };
+ static void _net_receive(Point_process*, double*, double);
+ static void _update_ion_pointer(Datum*);
  extern Symbol* hoc_lookup(const char*);
 extern void _nrn_thread_reg(int, int, void(*)(Datum*));
 extern void _nrn_thread_table_reg(int, void(*)(double*, Datum*, Datum*, NrnThread*, int));
 extern void hoc_register_tolerance(int, HocStateTolerance*, Symbol***);
 extern void _cvode_abstol( Symbol**, double*, int);
 
- void _gaba_b_reg() {
-	int _vectorized = 0;
+ void _GABA_B_reg() {
+	int _vectorized = 1;
   _initlists();
+ 	ion_reg("ca", -10000.);
+ 	_ca_sym = hoc_lookup("ca_ion");
  	_pointtype = point_register_mech(_mechanism,
 	 nrn_alloc,nrn_cur, nrn_jacob, nrn_state, nrn_init,
-	 hoc_nrnpointerindex, 0,
+	 hoc_nrnpointerindex, 1,
 	 _hoc_create_pnt, _hoc_destroy_pnt, _member_func);
  _mechtype = nrn_get_mechtype(_mechanism[1]);
      _nrn_setdata_reg(_mechtype, _setdata);
+     _nrn_thread_reg(_mechtype, 2, _update_ion_pointer);
  #if NMODL_TEXT
   hoc_reg_nmodl_text(_mechtype, nmodl_file_text);
   hoc_reg_nmodl_filename(_mechtype, nmodl_filename);
 #endif
-  hoc_register_prop_size(_mechtype, 12, 4);
+  hoc_register_prop_size(_mechtype, 14, 5);
   hoc_register_dparam_semantics(_mechtype, 0, "area");
   hoc_register_dparam_semantics(_mechtype, 1, "pntproc");
-  hoc_register_dparam_semantics(_mechtype, 2, "pointer");
-  hoc_register_dparam_semantics(_mechtype, 3, "cvodeieq");
+  hoc_register_dparam_semantics(_mechtype, 2, "ca_ion");
+  hoc_register_dparam_semantics(_mechtype, 3, "ca_ion");
+  hoc_register_dparam_semantics(_mechtype, 4, "cvodeieq");
  	hoc_register_cvode(_mechtype, _ode_count, _ode_map, _ode_spec, _ode_matsol);
  	hoc_register_tolerance(_mechtype, _hoc_state_tol, &_atollist);
+ pnt_receive[_mechtype] = _net_receive;
+ pnt_receive_size[_mechtype] = 1;
  	hoc_register_var(hoc_scdoub, hoc_vdoub, hoc_intfunc);
- 	ivoc_help("help ?1 GABAb /Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/gaba_b.mod\n");
+ 	ivoc_help("help ?1 GABAB /Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/GABA_B.mod\n");
  hoc_register_limits(_mechtype, _hoc_parm_limits);
  hoc_register_units(_mechtype, _hoc_parm_units);
  }
 static int _reset;
-static char *modelname = "minimal model of GABAb receptors";
+static char *modelname = "";
 
 static int error;
 static int _ninits = 0;
 static int _match_recurse=1;
 static void _modl_cleanup(){ _match_recurse=1;}
-static int release();
- static int _deriv1_advance = 0;
  
 static int _ode_spec1(_threadargsproto_);
 /*static int _ode_matsol1(_threadargsproto_);*/
- static int _slist2[2]; static double _dlist2[2];
- static double _savstate1[2], *_temp1 = _savstate1;
  static int _slist1[2], _dlist1[2];
- static int bindkin(_threadargsproto_);
+ static int state(_threadargsproto_);
  
 /*CVODE*/
- static int _ode_spec1 () {_reset=0;
- {
-   release ( _threadargs_ ) ;
-   DR = K1 * C * ( 1.0 - R ) - K2 * R ;
-   DG = K3 * R - K4 * G ;
+ static int _ode_spec1 (double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt) {int _reset = 0; {
+   DA = - A / tau_r ;
+   DB = - B / tau_d ;
    }
  return _reset;
 }
- static int _ode_matsol1 () {
- release ( _threadargs_ ) ;
- DR = DR  / (1. - dt*( ( K1 * C )*( ( ( - 1.0 ) ) ) - ( K2 )*( 1.0 ) )) ;
- DG = DG  / (1. - dt*( ( - ( K4 )*( 1.0 ) ) )) ;
+ static int _ode_matsol1 (double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt) {
+ DA = DA  / (1. - dt*( ( - 1.0 ) / tau_r )) ;
+ DB = DB  / (1. - dt*( ( - 1.0 ) / tau_d )) ;
   return 0;
 }
  /*END CVODE*/
- 
-static int bindkin () {_reset=0;
- { static int _recurse = 0;
- int _counte = -1;
- if (!_recurse) {
- _recurse = 1;
- {int _id; for(_id=0; _id < 2; _id++) { _savstate1[_id] = _p[_slist1[_id]];}}
- error = newton(2,_slist2, _p, bindkin, _dlist2);
- _recurse = 0; if(error) {abort_run(error);}}
- {
-   release ( _threadargs_ ) ;
-   DR = K1 * C * ( 1.0 - R ) - K2 * R ;
-   DG = K3 * R - K4 * G ;
-   {int _id; for(_id=0; _id < 2; _id++) {
-if (_deriv1_advance) {
- _dlist2[++_counte] = _p[_dlist1[_id]] - (_p[_slist1[_id]] - _savstate1[_id])/dt;
- }else{
-_dlist2[++_counte] = _p[_slist1[_id]] - _savstate1[_id];}}}
- } }
- return _reset;}
- 
-static int  release (  ) {
-   TimeCount = TimeCount - dt ;
-   if ( TimeCount < - Deadtime ) {
-     if ( pre > Prethresh ) {
-       C = Cmax ;
-       lastrelease = t ;
-       TimeCount = Cdur ;
-       }
-     }
-   else if ( TimeCount > 0.0 ) {
-     }
-   else if ( C  == Cmax ) {
-     C = 0. ;
-     }
-    return 0; }
- 
-static double _hoc_release(void* _vptr) {
- double _r;
-    _hoc_setdata(_vptr);
- _r = 1.;
- release (  );
- return(_r);
+ static int state (double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt) { {
+    A = A + (1. - exp(dt*(( - 1.0 ) / tau_r)))*(- ( 0.0 ) / ( ( - 1.0 ) / tau_r ) - A) ;
+    B = B + (1. - exp(dt*(( - 1.0 ) / tau_d)))*(- ( 0.0 ) / ( ( - 1.0 ) / tau_d ) - B) ;
+   }
+  return 0;
 }
+ 
+static void _net_receive (Point_process* _pnt, double* _args, double _lflag) 
+{  double* _p; Datum* _ppvar; Datum* _thread; NrnThread* _nt;
+   _thread = (Datum*)0; _nt = (NrnThread*)_pnt->_vnt;   _p = _pnt->_prop->param; _ppvar = _pnt->_prop->dparam;
+  if (_tsav > t){ extern char* hoc_object_name(Object*); hoc_execerror(hoc_object_name(_pnt->ob), ":Event arrived out of order. Must call ParallelContext.set_maxstep AFTER assigning minimum NetCon.delay");}
+ _tsav = t; {
+     if (nrn_netrec_state_adjust && !cvode_active_){
+    /* discon state adjustment for cnexp case (rate uses no local variable) */
+    double __state = A;
+    double __primary = (A + _args[0] * factor) - __state;
+     __primary += ( 1. - exp( 0.5*dt*( ( - 1.0 ) / tau_r ) ) )*( - ( 0.0 ) / ( ( - 1.0 ) / tau_r ) - __primary );
+    A += __primary;
+  } else {
+ A = A + _args[0] * factor ;
+     }
+   if (nrn_netrec_state_adjust && !cvode_active_){
+    /* discon state adjustment for cnexp case (rate uses no local variable) */
+    double __state = B;
+    double __primary = (B + _args[0] * factor) - __state;
+     __primary += ( 1. - exp( 0.5*dt*( ( - 1.0 ) / tau_d ) ) )*( - ( 0.0 ) / ( ( - 1.0 ) / tau_d ) - __primary );
+    B += __primary;
+  } else {
+ B = B + _args[0] * factor ;
+     }
+ } }
  
 static int _ode_count(int _type){ return 2;}
  
 static void _ode_spec(NrnThread* _nt, _Memb_list* _ml, int _type) {
-   Datum* _thread;
+   double* _p; Datum* _ppvar; Datum* _thread;
    Node* _nd; double _v; int _iml, _cntml;
   _cntml = _ml->_nodecount;
   _thread = _ml->_thread;
@@ -389,10 +347,13 @@ static void _ode_spec(NrnThread* _nt, _Memb_list* _ml, int _type) {
     _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
     _nd = _ml->_nodelist[_iml];
     v = NODEV(_nd);
-     _ode_spec1 ();
+  cai = _ion_cai;
+  cao = _ion_cao;
+     _ode_spec1 (_p, _ppvar, _thread, _nt);
  }}
  
 static void _ode_map(int _ieq, double** _pv, double** _pvdot, double* _pp, Datum* _ppd, double* _atol, int _type) { 
+	double* _p; Datum* _ppvar;
  	int _i; _p = _pp; _ppvar = _ppd;
 	_cvode_ieq = _ieq;
 	for (_i=0; _i < 2; ++_i) {
@@ -402,11 +363,11 @@ static void _ode_map(int _ieq, double** _pv, double** _pvdot, double* _pp, Datum
  }
  
 static void _ode_matsol_instance1(_threadargsproto_) {
- _ode_matsol1 ();
+ _ode_matsol1 (_p, _ppvar, _thread, _nt);
  }
  
 static void _ode_matsol(NrnThread* _nt, _Memb_list* _ml, int _type) {
-   Datum* _thread;
+   double* _p; Datum* _ppvar; Datum* _thread;
    Node* _nd; double _v; int _iml, _cntml;
   _cntml = _ml->_nodecount;
   _thread = _ml->_thread;
@@ -414,36 +375,42 @@ static void _ode_matsol(NrnThread* _nt, _Memb_list* _ml, int _type) {
     _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
     _nd = _ml->_nodelist[_iml];
     v = NODEV(_nd);
+  cai = _ion_cai;
+  cao = _ion_cao;
  _ode_matsol_instance1(_threadargs_);
  }}
+ extern void nrn_update_ion_pointer(Symbol*, Datum*, int, int);
+ static void _update_ion_pointer(Datum* _ppvar) {
+   nrn_update_ion_pointer(_ca_sym, _ppvar, 2, 1);
+   nrn_update_ion_pointer(_ca_sym, _ppvar, 3, 2);
+ }
 
-static void initmodel() {
-  int _i; double _save;_ninits++;
- _save = t;
- t = 0.0;
-{
-  G = G0;
-  R = R0;
+static void initmodel(double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt) {
+  int _i; double _save;{
+  A = A0;
+  B = B0;
  {
-   C = 0.0 ;
-   lastrelease = - 1000.0 ;
-   R = 0.0 ;
-   G = 0.0 ;
-   TimeCount = - 1.0 ;
+   double _ltp ;
+ A = 0.0 ;
+   B = 0.0 ;
+   _ltp = ( tau_r * tau_d ) / ( tau_d - tau_r ) * log ( tau_d / tau_r ) ;
+   factor = 1.0 / ( - exp ( - _ltp / tau_r ) + exp ( - _ltp / tau_d ) ) ;
    }
-  _sav_indep = t; t = _save;
-
+ 
 }
 }
 
 static void nrn_init(NrnThread* _nt, _Memb_list* _ml, int _type){
+double* _p; Datum* _ppvar; Datum* _thread;
 Node *_nd; double _v; int* _ni; int _iml, _cntml;
 #if CACHEVEC
     _ni = _ml->_nodeindices;
 #endif
 _cntml = _ml->_nodecount;
+_thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
+ _tsav = -1e20;
 #if CACHEVEC
   if (use_cachevec) {
     _v = VEC_V(_ni[_iml]);
@@ -454,25 +421,29 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
     _v = NODEV(_nd);
   }
  v = _v;
- initmodel();
-}}
+  cai = _ion_cai;
+  cao = _ion_cao;
+ initmodel(_p, _ppvar, _thread, _nt);
+}
+}
 
-static double _nrn_current(double _v){double _current=0.;v=_v;{ {
-   Gn = pow( G , n ) ;
-   g = gmax * Gn / ( Gn + KD ) ;
-   i = g * ( v - Erev ) ;
+static double _nrn_current(double* _p, Datum* _ppvar, Datum* _thread, NrnThread* _nt, double _v){double _current=0.;v=_v;{ {
+   g = ( B - A ) ;
+   i = g * ( v - e ) ;
    }
  _current += i;
 
 } return _current;
 }
 
-static void nrn_cur(NrnThread* _nt, _Memb_list* _ml, int _type){
+static void nrn_cur(NrnThread* _nt, _Memb_list* _ml, int _type) {
+double* _p; Datum* _ppvar; Datum* _thread;
 Node *_nd; int* _ni; double _rhs, _v; int _iml, _cntml;
 #if CACHEVEC
     _ni = _ml->_nodeindices;
 #endif
 _cntml = _ml->_nodecount;
+_thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
 #if CACHEVEC
@@ -484,8 +455,10 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
     _nd = _ml->_nodelist[_iml];
     _v = NODEV(_nd);
   }
- _g = _nrn_current(_v + .001);
- 	{ _rhs = _nrn_current(_v);
+  cai = _ion_cai;
+  cao = _ion_cao;
+ _g = _nrn_current(_p, _ppvar, _thread, _nt, _v + .001);
+ 	{ _rhs = _nrn_current(_p, _ppvar, _thread, _nt, _v);
  	}
  _g = (_g - _rhs)/.001;
  _g *=  1.e2/(_nd_area);
@@ -499,14 +472,18 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
 	NODERHS(_nd) -= _rhs;
   }
  
-}}
+}
+ 
+}
 
-static void nrn_jacob(NrnThread* _nt, _Memb_list* _ml, int _type){
+static void nrn_jacob(NrnThread* _nt, _Memb_list* _ml, int _type) {
+double* _p; Datum* _ppvar; Datum* _thread;
 Node *_nd; int* _ni; int _iml, _cntml;
 #if CACHEVEC
     _ni = _ml->_nodeindices;
 #endif
 _cntml = _ml->_nodecount;
+_thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml];
 #if CACHEVEC
@@ -519,16 +496,18 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
 	NODED(_nd) += _g;
   }
  
-}}
+}
+ 
+}
 
-static void nrn_state(NrnThread* _nt, _Memb_list* _ml, int _type){
+static void nrn_state(NrnThread* _nt, _Memb_list* _ml, int _type) {
+double* _p; Datum* _ppvar; Datum* _thread;
 Node *_nd; double _v = 0.0; int* _ni; int _iml, _cntml;
-double _dtsav = dt;
-if (secondorder) { dt *= 0.5; }
 #if CACHEVEC
     _ni = _ml->_nodeindices;
 #endif
 _cntml = _ml->_nodecount;
+_thread = _ml->_thread;
 for (_iml = 0; _iml < _cntml; ++_iml) {
  _p = _ml->_data[_iml]; _ppvar = _ml->_pdata[_iml];
  _nd = _ml->_nodelist[_iml];
@@ -543,237 +522,80 @@ for (_iml = 0; _iml < _cntml; ++_iml) {
   }
  v=_v;
 {
- { error = _deriv1_advance = 1;
- derivimplicit(_ninits, 2, _slist1, _dlist1, _p, &t, dt, bindkin, &_temp1);
-_deriv1_advance = 0;
- if(error){fprintf(stderr,"at line 166 in file gaba_b.mod:\n	SOLVE bindkin METHOD derivimplicit\n"); nrn_complain(_p); abort_run(error);}
-    if (secondorder) {
-    int _i;
-    for (_i = 0; _i < 2; ++_i) {
-      _p[_slist1[_i]] += dt*_p[_dlist1[_i]];
-    }}
- }}}
- dt = _dtsav;
+  cai = _ion_cai;
+  cao = _ion_cao;
+ {   state(_p, _ppvar, _thread, _nt);
+  }}}
+
 }
 
 static void terminal(){}
 
-static void _initlists() {
+static void _initlists(){
+ double _x; double* _p = &_x;
  int _i; static int _first = 1;
   if (!_first) return;
- _slist1[0] = R_columnindex;  _dlist1[0] = DR_columnindex;
- _slist1[1] = G_columnindex;  _dlist1[1] = DG_columnindex;
- _slist2[0] = G_columnindex;
- _slist2[1] = R_columnindex;
+ _slist1[0] = A_columnindex;  _dlist1[0] = DA_columnindex;
+ _slist1[1] = B_columnindex;  _dlist1[1] = DB_columnindex;
 _first = 0;
 }
 
+#if defined(__cplusplus)
+} /* extern "C" */
+#endif
+
 #if NMODL_TEXT
-static const char* nmodl_filename = "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/gaba_b.mod";
+static const char* nmodl_filename = "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/GABA_B.mod";
 static const char* nmodl_file_text = 
-  "TITLE minimal model of GABAb receptors\n"
-  "\n"
-  "COMMENT\n"
-  "-----------------------------------------------------------------------------\n"
-  "\n"
-  "	Kinetic model of GABA-B receptors\n"
-  "	=================================\n"
-  "\n"
-  "  MODEL OF SECOND-ORDER G-PROTEIN TRANSDUCTION AND FAST K+ OPENING\n"
-  "  WITH COOPERATIVITY OF G-PROTEIN BINDING TO K+ CHANNEL\n"
-  "\n"
-  "  PULSE OF TRANSMITTER\n"
-  "\n"
-  "  SIMPLE KINETICS WITH NO DESENSITIZATION\n"
-  "\n"
-  "	Features:\n"
-  "\n"
-  "  	  - peak at 100 ms; time course fit to Tom Otis' PSC\n"
-  "	  - SUMMATION (psc is much stronger with bursts)\n"
-  "\n"
-  "\n"
-  "	Approximations:\n"
-  "\n"
-  "	  - single binding site on receptor	\n"
-  "	  - model of alpha G-protein activation (direct) of K+ channel\n"
-  "	  - G-protein dynamics is second-order; simplified as follows:\n"
-  "		- saturating receptor\n"
-  "		- no desensitization\n"
-  "		- Michaelis-Menten of receptor for G-protein production\n"
-  "		- \"resting\" G-protein is in excess\n"
-  "		- Quasi-stat of intermediate enzymatic forms\n"
-  "	  - binding on K+ channel is fast\n"
-  "\n"
-  "\n"
-  "	Kinetic Equations:\n"
-  "\n"
-  "	  dR/dt = K1 * T * (1-R-D) - K2 * R\n"
-  "\n"
-  "	  dG/dt = K3 * R - K4 * G\n"
-  "\n"
-  "	  R : activated receptor\n"
-  "	  T : transmitter\n"
-  "	  G : activated G-protein\n"
-  "	  K1,K2,K3,K4 = kinetic rate cst\n"
-  "\n"
-  "  n activated G-protein bind to a K+ channel:\n"
-  "\n"
-  "	n G + C <-> O		(Alpha,Beta)\n"
-  "\n"
-  "  If the binding is fast, the fraction of open channels is given by:\n"
-  "\n"
-  "	O = G^n / ( G^n + KD )\n"
-  "\n"
-  "  where KD = Beta / Alpha is the dissociation constant\n"
-  "\n"
-  "-----------------------------------------------------------------------------\n"
-  "\n"
-  "  Parameters estimated from patch clamp recordings of GABAB PSP's in\n"
-  "  rat hippocampal slices (Otis et al, J. Physiol. 463: 391-407, 1993).\n"
-  "\n"
-  "-----------------------------------------------------------------------------\n"
-  "\n"
-  "  PULSE MECHANISM\n"
-  "\n"
-  "  Kinetic synapse with release mechanism as a pulse.  \n"
-  "\n"
-  "  Warning: for this mechanism to be equivalent to the model with diffusion \n"
-  "  of transmitter, small pulses must be used...\n"
-  "\n"
-  "  For a detailed model of GABAB:\n"
-  "\n"
-  "  Destexhe, A. and Sejnowski, T.J.  G-protein activation kinetics and\n"
-  "  spill-over of GABA may account for differences between inhibitory responses\n"
-  "  in the hippocampus and thalamus.  Proc. Natl. Acad. Sci. USA  92:\n"
-  "  9515-9519, 1995.\n"
-  "\n"
-  "  For a review of models of synaptic currents:\n"
-  "\n"
-  "  Destexhe, A., Mainen, Z.F. and Sejnowski, T.J.  Kinetic models of \n"
-  "  synaptic transmission.  In: Methods in Neuronal Modeling (2nd edition; \n"
-  "  edited by Koch, C. and Segev, I.), MIT press, Cambridge, 1996.\n"
-  "\n"
-  "  This simplified model was introduced in:\n"
-  "\n"
-  "  Destexhe, A., Bal, T., McCormick, D.A. and Sejnowski, T.J.\n"
-  "  Ionic mechanisms underlying synchronized oscillations and propagating\n"
-  "  waves in a model of ferret thalamic slices. Journal of Neurophysiology\n"
-  "  76: 2049-2070, 1996.  \n"
-  "\n"
-  "  See also http://cns.iaf.cnrs-gif.fr\n"
-  "\n"
-  "  Alain Destexhe, Salk Institute and Laval University, 1995\n"
-  "  27-11-2002: the pulse is implemented using a counter, which is more\n"
-  "       stable numerically (thanks to Yann LeFranc)\n"
-  "\n"
-  "-----------------------------------------------------------------------------\n"
-  "ENDCOMMENT\n"
-  "\n"
-  "\n"
-  "\n"
-  "INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}\n"
-  "\n"
   "NEURON {\n"
-  "	POINT_PROCESS GABAb\n"
-  "	POINTER pre\n"
-  "	RANGE C, R, G, g, gmax, lastrelease, TimeCount\n"
-  "	NONSPECIFIC_CURRENT i\n"
-  "	GLOBAL Cmax, Cdur, Prethresh, Deadtime\n"
-  "	GLOBAL K1, K2, K3, K4, KD, Erev\n"
-  "}\n"
-  "UNITS {\n"
-  "	(nA) = (nanoamp)\n"
-  "	(mV) = (millivolt)\n"
-  "	(umho) = (micromho)\n"
-  "	(mM) = (milli/liter)\n"
+  "    POINT_PROCESS GABAB\n"
+  "    NONSPECIFIC_CURRENT i\n"
+  "    RANGE gbar, e, tau_r, tau_d, factor\n"
+  "    USEION ca READ cai, cao\n"
+  "\n"
   "}\n"
   "\n"
   "PARAMETER {\n"
-  "	dt		(ms)\n"
-  "	Cmax	= 0.5	(mM)		: max transmitter concentration\n"
-  "	Cdur	= 0.3	(ms)		: transmitter duration (rising phase)\n"
-  "	Prethresh = 0 			: voltage level nec for release\n"
-  "	Deadtime = 1	(ms)		: mimimum time between release events\n"
-  ":\n"
-  ":	From Kfit with long pulse (5ms 0.5mM)\n"
-  ":\n"
-  "	K1	= 0.52	(/ms mM)	: forward binding rate to receptor\n"
-  "	K2	= 0.0013 (/ms)		: backward (unbinding) rate of receptor\n"
-  "	K3	= 0.098 (/ms)		: rate of G-protein production\n"
-  "	K4	= 0.033 (/ms)		: rate of G-protein decay\n"
-  "	KD	= 100			: dissociation constant of K+ channel\n"
-  "	n	= 4			: nb of binding sites of G-protein on K+\n"
-  "	Erev	= -95	(mV)		: reversal potential (E_K)\n"
-  "	gmax		(umho)		: maximum conductance\n"
+  "    gbar  = 0.0005   (uS)\n"
+  "    e     = -95      (mV)\n"
+  "    tau_r = 50       (ms)\n"
+  "    tau_d = 300      (ms)\n"
   "}\n"
-  "\n"
   "\n"
   "ASSIGNED {\n"
-  "	v		(mV)		: postsynaptic voltage\n"
-  "	i 		(nA)		: current = g*(v - Erev)\n"
-  "	g 		(umho)		: conductance\n"
-  "	C		(mM)		: transmitter concentration\n"
-  "	Gn\n"
-  "	pre 				: pointer to presynaptic variable\n"
-  "	lastrelease	(ms)		: time of last spike\n"
-  "	TimeCount	(ms)		: time counter\n"
+  "    v       (mV)\n"
+  "    i       (nA)\n"
+  "    g       (uS)\n"
+  "    factor  (1)\n"
   "}\n"
-  "\n"
   "\n"
   "STATE {\n"
-  "	R				: fraction of activated receptor\n"
-  "	G				: fraction of activated G-protein\n"
+  "    A (uS)\n"
+  "    B (uS)\n"
   "}\n"
   "\n"
-  "\n"
   "INITIAL {\n"
-  "	C = 0\n"
-  "	lastrelease = -1000\n"
-  "\n"
-  "	R = 0\n"
-  "	G = 0\n"
-  "	TimeCount=-1\n"
+  "    LOCAL tp\n"
+  "    A = 0\n"
+  "    B = 0\n"
+  "    tp = (tau_r*tau_d)/(tau_d - tau_r)*log(tau_d/tau_r)\n"
+  "    factor = 1/(-exp(-tp/tau_r) + exp(-tp/tau_d))\n"
   "}\n"
   "\n"
   "BREAKPOINT {\n"
-  "	SOLVE bindkin METHOD derivimplicit\n"
-  "	Gn = G^n\n"
-  "	g = gmax * Gn / (Gn+KD)\n"
-  "	i = g*(v - Erev)\n"
+  "    SOLVE state METHOD cnexp\n"
+  "    g = (B - A)\n"
+  "    i = g*(v - e)\n"
   "}\n"
   "\n"
-  "\n"
-  "DERIVATIVE bindkin {\n"
-  "\n"
-  "	release()		: evaluate the variable C\n"
-  "\n"
-  "	R' = K1 * C * (1-R) - K2 * R\n"
-  "	G' = K3 * R - K4 * G\n"
-  "\n"
+  "DERIVATIVE state {\n"
+  "    A' = -A/tau_r\n"
+  "    B' = -B/tau_d\n"
   "}\n"
   "\n"
-  "\n"
-  "PROCEDURE release() {\n"
-  "	:will crash if user hasn't set pre with the connect statement \n"
-  "\n"
-  "	TimeCount=TimeCount-dt			: time since last release ended\n"
-  "\n"
-  "						: ready for another release?\n"
-  "	if (TimeCount < -Deadtime) {\n"
-  "		if (pre > Prethresh) {		: spike occured?\n"
-  "			C = Cmax			: start new release\n"
-  "			lastrelease = t\n"
-  "			TimeCount=Cdur\n"
-  "		}\n"
-  "						\n"
-  "	} else if (TimeCount > 0) {		: still releasing?\n"
-  "	\n"
-  "		: do nothing\n"
-  "	\n"
-  "	} else if (C == Cmax) {			: in dead time after release\n"
-  "		C = 0.\n"
-  "	}\n"
-  "\n"
+  "NET_RECEIVE(weight) {\n"
+  "    A = A + weight*factor\n"
+  "    B = B + weight*factor\n"
   "}\n"
   ;
 #endif

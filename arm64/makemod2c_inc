@@ -1,11 +1,3 @@
-./gaba_b.c: ../gaba_b.mod
-	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
-	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "gaba_b.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
-
-./gaba_b.o: ./gaba_b.c
-	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
-	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
-
 ./km.c: ../km.mod
 	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
 	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "km.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
@@ -22,11 +14,19 @@
 	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
 	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
 
-./nmda.c: ../nmda.mod
+./v_gaba_b.c: ../v_gaba_b.mod
 	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
-	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "nmda.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "v_gaba_b.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
 
-./nmda.o: ./nmda.c
+./v_gaba_b.o: ./v_gaba_b.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
+	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
+
+./v_nmda.c: ../v_nmda.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\\n"
+	(cd "..";  MODLUNIT=$(NRNUNITS) $(NOCMODL) "v_nmda.mod" -o "/Users/vartanarakelian/Documents/GitHub/MS_ReflexCircuit/arm64")
+
+./v_nmda.o: ./v_nmda.c
 	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\\n"
 	$(COMPILE) -I".." $(INCLUDES) -fPIC -c $< -o $@
 

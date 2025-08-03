@@ -1,4 +1,4 @@
-TITLE minimal model of GABAb receptors
+TITLE simple GABAb receptors
 
 COMMENT
 -----------------------------------------------------------------------------
@@ -67,31 +67,11 @@ COMMENT
   Warning: for this mechanism to be equivalent to the model with diffusion 
   of transmitter, small pulses must be used...
 
-  For a detailed model of GABAB:
+  see details at http://cns.iaf.cnrs-gif.fr
 
-  Destexhe, A. and Sejnowski, T.J.  G-protein activation kinetics and
-  spill-over of GABA may account for differences between inhibitory responses
-  in the hippocampus and thalamus.  Proc. Natl. Acad. Sci. USA  92:
-  9515-9519, 1995.
-
-  For a review of models of synaptic currents:
-
-  Destexhe, A., Mainen, Z.F. and Sejnowski, T.J.  Kinetic models of 
-  synaptic transmission.  In: Methods in Neuronal Modeling (2nd edition; 
-  edited by Koch, C. and Segev, I.), MIT press, Cambridge, 1996.
-
-  This simplified model was introduced in:
-
-  Destexhe, A., Bal, T., McCormick, D.A. and Sejnowski, T.J.
-  Ionic mechanisms underlying synchronized oscillations and propagating
-  waves in a model of ferret thalamic slices. Journal of Neurophysiology
-  76: 2049-2070, 1996.  
-
-  See also http://cns.iaf.cnrs-gif.fr
-
-  Alain Destexhe, Salk Institute and Laval University, 1995
+  Written by A. Destexhe, 1995
   27-11-2002: the pulse is implemented using a counter, which is more
-       stable numerically (thanks to Yann LeFranc)
+	stable numerically (thanks to Yann LeFranc)
 
 -----------------------------------------------------------------------------
 ENDCOMMENT
@@ -101,7 +81,7 @@ ENDCOMMENT
 INDEPENDENT {t FROM 0 TO 1 WITH 1 (ms)}
 
 NEURON {
-	POINT_PROCESS GABAb
+	POINT_PROCESS GABAb_S
 	POINTER pre
 	RANGE C, R, G, g, gmax, lastrelease, TimeCount
 	NONSPECIFIC_CURRENT i
@@ -155,7 +135,7 @@ STATE {
 
 INITIAL {
 	C = 0
-	lastrelease = -1000
+	lastrelease = -9e9
 
 	R = 0
 	G = 0
@@ -163,7 +143,7 @@ INITIAL {
 }
 
 BREAKPOINT {
-	SOLVE bindkin METHOD derivimplicit
+	SOLVE bindkin METHOD cnexp
 	Gn = G^n
 	g = gmax * Gn / (Gn+KD)
 	i = g*(v - Erev)
@@ -183,7 +163,7 @@ DERIVATIVE bindkin {
 PROCEDURE release() {
 	:will crash if user hasn't set pre with the connect statement 
 
-	TimeCount=TimeCount-dt			: time since last release ended
+        TimeCount=TimeCount-dt       		: time since last release ended
 
 						: ready for another release?
 	if (TimeCount < -Deadtime) {

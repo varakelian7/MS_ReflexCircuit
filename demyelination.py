@@ -112,7 +112,7 @@ syn_si.e = syn_si_e
 
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
-nc_nmda_si.threshold = 0  # or whatever spike threshold you're using
+nc_nmda_si.threshold = syn_si_threshold  
 nc_nmda_si.weight[0] = 0.001
 
 
@@ -133,6 +133,18 @@ nc_im.threshold = syn_im_threshold
 nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
+gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
+gabab_syn.gmax = 0.001  # adjust conductance
+
+# Set up NetCon
+gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
+gabab_nc.threshold = syn_im_threshold
+gabab_nc.delay = 1
+gabab_nc.weight[0] = 1.0  # this weight will toggle between 0/1 as event flag
+
+# Link the pointer to the weight[0]
+h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)
+
 
 syn_sm = h.Exp2Syn(motor.dend(0.5))
 syn_sm.tau1 = syn_sm_tau1
@@ -141,7 +153,7 @@ syn_sm.e = syn_sm_e
 
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
-nc_nmda_sm.threshold = 0  # or whatever spike threshold you're using
+nc_nmda_sm.threshold = syn_sm_threshold
 nc_nmda_sm.weight[0] = 0.001
 
 
