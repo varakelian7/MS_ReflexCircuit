@@ -5,11 +5,12 @@ import numpy as np
 h.load_file('stdrun.hoc')
 from setup import Sensory, Motor, MyelinatedInterneuron
 h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
+import random as rd
 
-#changes have NOT been made
 
 V_REST = -65  
 
+DEMYE_PCT = 6
 
 SIM_DUR = 2000
 
@@ -82,27 +83,47 @@ for internode in interneuron.axon:
 
 for section in s_internodes:
     section.insert('hh')  # Add Hodgkin-Huxley channels
-    section.gnabar_hh = 0.12
-    section.gkbar_hh = 0.036
-    section.cm = 0.3*1.25*1.06
-    section.Ra = 50*1.25*1.06
-    section.g_pas = 0.001
+    section.gnabar_hh = 0.012
+    section.gkbar_hh = 0.0036
+    section.cm = 0.3
+    section.Ra = 50*1.25
+    section.g_pas = 1e-5
+    for seg in section:
+        if rd.random() < DEMYE_PCT/100:
+            seg.gnabar_hh = 0.12
+            seg.gkbar_hh = 0.036
+            seg.cm = 0.3*1.25
+            seg.g_pas = 0.001
+
 
 for section in i_internodes:
     section.insert('hh')  # Add Hodgkin-Huxley channels
-    section.gnabar_hh = 0.12
-    section.gkbar_hh = 0.036
-    section.cm = 0.3*1.25*1.06
-    section.Ra = 50*1.25*1.06
-    section.g_pas = 0.001
+    section.gnabar_hh = 0.012
+    section.gkbar_hh = 0.0036
+    section.cm = 0.3
+    section.Ra = 50*1.25
+    section.g_pas = 1e-5
+    for seg in section:
+        if rd.random() < DEMYE_PCT/100:
+            seg.gnabar_hh = 0.12
+            seg.gkbar_hh = 0.036
+            seg.cm = 0.3*1.25
+            seg.g_pas = 0.001
 
 for section in m_internodes:
     section.insert('hh')  # Add Hodgkin-Huxley channels
-    section.gnabar_hh = 0.12
-    section.gkbar_hh = 0.036
-    section.cm = 0.3*1.25*1.06
-    section.Ra = 50*1.25*1.06
-    section.g_pas = 0.001
+    section.gnabar_hh = 0.012
+    section.gkbar_hh = 0.0036
+    section.cm = 0.3
+    section.Ra = 50*1.25
+    section.g_pas = 1e-5
+    for seg in section:
+        if rd.random() < DEMYE_PCT/100:
+            seg.gnabar_hh = 0.12
+            seg.gkbar_hh = 0.036
+            seg.cm = 0.3*1.25
+            seg.g_pas = 0.001
+
 
 syn_si = h.Exp2Syn(interneuron.dendrite(0.5))
 syn_si.tau1 = syn_si_tau1
