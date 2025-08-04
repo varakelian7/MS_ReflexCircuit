@@ -1,26 +1,20 @@
-
-#TO DO
-#make sure inhibition/excitation works as necessary
-#tweak sensory input so that it is more realistic
-#slow potassium channels on modeldb
-
 from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
 import numpy as np
 h.load_file('stdrun.hoc')
-#h.nrn_load_dll("x86_64/.libs/libnrnmech.so")
 from setup import Sensory, Motor, MyelinatedInterneuron
-#h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
 h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
+
+#changes have NOT been made
 
 
 V_REST = -65  
 
-spike_detector_loc = 0.5
 
 SIM_DUR = 2000
 
+spike_detector_loc = 0.5
 
 # Synaptic parameters
 syn_si_tau1 = 0.3 #
@@ -28,25 +22,27 @@ syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
 syn_si_delay = 1 #
-syn_si_weight = 0.03 #0.03
+syn_si_weight = 0.03 #
 
 syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 1.0 #1
-syn_im_weight = 0.015 #0.015
+syn_im_delay = 1.0
+syn_im_weight = 0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
 syn_sm_delay = 1.18
-syn_sm_weight = 0.02 #0.02
+syn_sm_weight = 0.02
 
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
+
+
 sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.4)
 
 """
@@ -71,6 +67,44 @@ interneuron = MyelinatedInterneuron(3, 50, 0, 0, 0)
 motor = Motor(0, 0, 0, 0, 0)
 #motor.stim.amp = 3  # Stronger if no spike
 
+#Demyelination changes:
+s_internodes = []
+for internode in sensory.central_axon:
+    if internode not in sensory.active_sections:
+        s_internodes.append(internode)
+m_internodes = []
+for internode in motor.axon:
+    if internode not in motor.active_sections:
+        m_internodes.append(internode)
+i_internodes = []
+for internode in interneuron.axon:
+    if internode not in interneuron.active_sections:
+        i_internodes.append(internode)
+
+for section in s_internodes:
+    section.insert('hh')  # Add Hodgkin-Huxley channels
+    section.gnabar_hh = 0.12
+    section.gkbar_hh = 0.036
+    section.cm = 0.3*1.7*1.4
+    section.Ra = 100
+    section.g_pas = 0.001
+
+for section in i_internodes:
+    section.insert('hh')  # Add Hodgkin-Huxley channels
+    section.gnabar_hh = 0.12
+    section.gkbar_hh = 0.036
+    section.cm = 0.3*1.7*1.4
+    section.Ra = 100
+    section.g_pas = 0.001
+
+for section in m_internodes:
+    section.insert('hh')  # Add Hodgkin-Huxley channels
+    section.gnabar_hh = 0.12
+    section.gkbar_hh = 0.036
+    section.cm = 0.3*1.7*1.4
+    section.Ra = 100
+    section.g_pas = 0.001
+
 syn_si = h.Exp2Syn(interneuron.dendrite(0.5))
 syn_si.tau1 = syn_si_tau1
 syn_si.tau2 = syn_si_tau2
@@ -79,7 +113,8 @@ syn_si.e = syn_si_e
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
 nc_nmda_si.threshold = syn_si_threshold  
-nc_nmda_si.weight[0] = 0.01
+nc_nmda_si.weight[0] = 0.01*1.6
+
 
 
 nc_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_si, sec=sensory.central_axon[-1])
@@ -88,6 +123,7 @@ nc_si.delay = syn_si_delay
 nc_si.weight[0] = syn_si_weight
 
 
+#right now modeling inhibition
 syn_im = h.Exp2Syn(motor.dend(0.5))
 syn_im.tau1 = syn_im_tau1
 syn_im.tau2 = syn_im_tau2
@@ -104,22 +140,21 @@ gabab_syn.gmax = 0.01  # adjust conductance
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
 gabab_nc.threshold = syn_im_threshold
 gabab_nc.delay = 1
-gabab_nc.weight[0] = 1.0  # this weight will toggle between 0/1 as event flag
+gabab_nc.weight[0] = 1.0*0.6  # this weight will toggle between 0/1 as event flag
 
 # Link the pointer to the weight[0]
 h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)
 
 
-
-syn_sm = h.Exp2Syn(motor.dend(0.5)) 
+syn_sm = h.Exp2Syn(motor.dend(0.5))
 syn_sm.tau1 = syn_sm_tau1
 syn_sm.tau2 = syn_sm_tau2
 syn_sm.e = syn_sm_e
 
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
-nc_nmda_sm.threshold = syn_sm_threshold  
-nc_nmda_sm.weight[0] = 0.01
+nc_nmda_sm.threshold = syn_sm_threshold
+nc_nmda_sm.weight[0] = 0.01*1.6
 
 
 
@@ -131,6 +166,7 @@ nc_sm.weight[0] = syn_sm_weight
 stim_amp = h.Vector().record(sensory.stimI._ref_i)
 
 #random noise:
+
 s_noise = h.IClamp(sensory.soma(0.5))
 s_noise.delay = 0
 s_noise.dur = SIM_DUR
@@ -142,8 +178,6 @@ i_noise.dur = SIM_DUR
 m_noise = h.IClamp(motor.soma(0.5))
 m_noise.delay = 0
 m_noise.dur = SIM_DUR
-
-
 
 dt = 0.1  # ms, same as h.dt
 tstop = SIM_DUR  # ms
@@ -157,7 +191,6 @@ vec_i = h.Vector(noise_current)
 vec_t = h.Vector(time_vector)
 
 vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
-
 
 
 h.finitialize(V_REST)

@@ -10,9 +10,8 @@ h.nrn_load_dll('./arm64/.libs/libnrnmech.dylib')
 
 V_REST = -65  
 
-DEMYELINATION = .7
 
-SIM_DUR = 1000
+SIM_DUR = 2000
 
 spike_detector_loc = 0.5
 
@@ -113,7 +112,7 @@ syn_si.e = syn_si_e
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
 nc_nmda_si.threshold = syn_si_threshold  
-nc_nmda_si.weight[0] = 0.001
+nc_nmda_si.weight[0] = 0.01
 
 
 
@@ -134,7 +133,7 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-gabab_syn.gmax = 0.001  # adjust conductance
+gabab_syn.gmax = 0.01  # adjust conductance
 
 # Set up NetCon
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
@@ -154,7 +153,7 @@ syn_sm.e = syn_sm_e
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
 nc_nmda_sm.threshold = syn_sm_threshold
-nc_nmda_sm.weight[0] = 0.001
+nc_nmda_sm.weight[0] = 0.01
 
 
 
@@ -166,11 +165,18 @@ nc_sm.weight[0] = syn_sm_weight
 stim_amp = h.Vector().record(sensory.stimI._ref_i)
 
 #random noise:
+
 s_noise = h.IClamp(sensory.soma(0.5))
 s_noise.delay = 0
 s_noise.dur = SIM_DUR
-#i_noise
-#m_noise
+
+i_noise = h.IClamp(interneuron.soma(0.5))
+i_noise.delay = 0
+i_noise.dur = SIM_DUR
+
+m_noise = h.IClamp(motor.soma(0.5))
+m_noise.delay = 0
+m_noise.dur = SIM_DUR
 
 dt = 0.1  # ms, same as h.dt
 tstop = SIM_DUR  # ms
