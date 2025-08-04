@@ -86,7 +86,7 @@ for section in s_internodes:
     section.gnabar_hh = 0.12
     section.gkbar_hh = 0.036
     section.cm = 0.3*1.7*1.4
-    section.Ra = 100
+    section.Ra = 50*1.7*1.4
     section.g_pas = 0.001
 
 for section in i_internodes:
@@ -94,7 +94,7 @@ for section in i_internodes:
     section.gnabar_hh = 0.12
     section.gkbar_hh = 0.036
     section.cm = 0.3*1.7*1.4
-    section.Ra = 100
+    section.Ra = 50*1.7*1.4
     section.g_pas = 0.001
 
 for section in m_internodes:
@@ -102,7 +102,7 @@ for section in m_internodes:
     section.gnabar_hh = 0.12
     section.gkbar_hh = 0.036
     section.cm = 0.3*1.7*1.4
-    section.Ra = 100
+    section.Ra = 50*1.7*1.4
     section.g_pas = 0.001
 
 syn_si = h.Exp2Syn(interneuron.dendrite(0.5))
