@@ -157,7 +157,8 @@ vec_i = h.Vector(noise_current)
 vec_t = h.Vector(time_vector)
 
 vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
-
+vec_i.play(i_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
+vec_i.play(m_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
 
 
 h.finitialize(V_REST)
