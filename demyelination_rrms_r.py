@@ -224,7 +224,7 @@ plt.plot(sensory.t, sensory.v_soma, label='Soma')
 plt.xlabel('Time (ms)')
 plt.ylabel('Membrane Potential (mV)')
 #plt.legend()
-plt.title("Sensory Neuron")
+plt.title("Sensory Neuron (RRMS-R)")
 plt.grid()
 
 plt.subplot(4,1,2)
