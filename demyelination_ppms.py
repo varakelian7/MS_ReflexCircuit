@@ -42,7 +42,7 @@ syn_sm_weight = 0.02
 sensory = Sensory(0,0,0,0,0)
 
 
-sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.4)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=.6)
 
 """
 sensory.stim.start = 2    # ms
@@ -123,6 +123,7 @@ nc_si.weight[0] = syn_si_weight
 
 
 #right now modeling inhibition
+
 syn_im = h.Exp2Syn(motor.dend(0.5))
 syn_im.tau1 = syn_im_tau1
 syn_im.tau2 = syn_im_tau2
