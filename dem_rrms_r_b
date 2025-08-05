@@ -139,7 +139,11 @@ syn_si.e = syn_si_e
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
 nc_nmda_si.threshold = syn_si_threshold  
+<<<<<<< HEAD:dem_rrms_r_b.py
 nc_nmda_si.weight[0] = 0.01*1.3
+=======
+nc_nmda_si.weight[0] = 0.01
+>>>>>>> parent of 690f6de (tues morning updates):dem_rrms_r_b
 
 
 
@@ -160,7 +164,7 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-gabab_syn.gmax = 0.0175*1.5  # adjust conductance
+gabab_syn.gmax = 0.02  # adjust conductance
 
 # Set up NetCon
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
@@ -180,7 +184,13 @@ syn_sm.e = syn_sm_e
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
 nc_nmda_sm.threshold = syn_sm_threshold
+<<<<<<< HEAD:dem_rrms_r_b.py
 nc_nmda_sm.weight[0] = 0.01*1.3
+=======
+nc_nmda_sm.weight[0] = 0.01
+
+
+>>>>>>> parent of 690f6de (tues morning updates):dem_rrms_r_b
 
 nc_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_sm, sec=sensory.central_axon[-1])
 nc_sm.threshold = syn_sm_threshold
@@ -261,7 +271,7 @@ plt.xlabel("Time (ms)")
 plt.ylabel("Injected Current (nA)")
 plt.title("Injected Stimulus")
 plt.grid()
-#plt.show()
+plt.show()
 
 
 

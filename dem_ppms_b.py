@@ -161,13 +161,17 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-gabab_syn.gmax = 0.01225*1.8  # adjust conductance
+gabab_syn.gmax = 0.02  # adjust conductance
 
 # Set up NetCon
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
 gabab_nc.threshold = syn_im_threshold
 gabab_nc.delay = 1
+<<<<<<< HEAD
 gabab_nc.weight[0] = 0.1*0.95  # this weight will toggle between 0/1 as event flag
+=======
+gabab_nc.weight[0] = 1.0*0.95  # this weight will toggle between 0/1 as event flag
+>>>>>>> parent of 690f6de (tues morning updates)
 
 # Link the pointer to the weight[0]
 h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)
@@ -265,7 +269,7 @@ plt.xlabel("Time (ms)")
 plt.ylabel("Injected Current (nA)")
 plt.title("Injected Stimulus")
 plt.grid()
-#plt.show()
+plt.show()
 
 
 
