@@ -139,7 +139,7 @@ syn_si.e = syn_si_e
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
 nc_nmda_si.threshold = syn_si_threshold  
-nc_nmda_si.weight[0] = 0.1*1.1
+nc_nmda_si.weight[0] = 0.01*1.1
 
 
 
@@ -167,7 +167,7 @@ gabab_syn.gmax = 0.01225*1.8  # adjust conductance
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
 gabab_nc.threshold = syn_im_threshold
 gabab_nc.delay = 1
-gabab_nc.weight[0] = 0.10*0.95  # this weight will toggle between 0/1 as event flag
+gabab_nc.weight[0] = 0.1*0.95  # this weight will toggle between 0/1 as event flag
 
 # Link the pointer to the weight[0]
 h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)
@@ -181,7 +181,7 @@ syn_sm.e = syn_sm_e
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
 nc_nmda_sm.threshold = syn_sm_threshold
-nc_nmda_sm.weight[0] = 0.1*1.1
+nc_nmda_sm.weight[0] = 0.01*1.1
 
 
 

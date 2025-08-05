@@ -11,7 +11,7 @@ import random as rd
 
 V_REST = -65  
 
-DEMYE_PCT = 24
+DEMYE_PCT = 28
 
 SIM_DUR = 2000
 
@@ -88,14 +88,14 @@ for section in s_internodes:
     section.gnabar_hh = 0.012
     section.gkbar_hh = 0.0036
     section.cm = 0.3
-    section.Ra = 50*1.3
+    section.Ra = 50*1.45
     section.g_pas = 1e-5
     i = 0
     for seg in section:
         if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
-            section.cm = 0.3*1.3
+            section.cm = 0.3*1.45
             seg.g_pas = 0.001
         i+=1
 
@@ -104,14 +104,14 @@ for section in i_internodes:
     section.gnabar_hh = 0.012
     section.gkbar_hh = 0.0036
     section.cm = 0.3
-    section.Ra = 50*1.3
+    section.Ra = 50*1.45
     section.g_pas = 1e-5
     i = 0
     for seg in section:
         if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
-            section.cm = 0.3*1.3
+            section.cm = 0.3*1.45
             seg.g_pas = 0.001
         i+=1
 
@@ -120,14 +120,14 @@ for section in m_internodes:
     section.gnabar_hh = 0.012
     section.gkbar_hh = 0.0036
     section.cm = 0.3
-    section.Ra = 50*1.3
+    section.Ra = 50*1.45
     section.g_pas = 1e-5
     i = 0
     for seg in section:
         if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
-            section.cm = 0.3*1.3
+            section.cm = 0.3*1.45
             seg.g_pas = 0.001
         i+=1
 
@@ -139,7 +139,7 @@ syn_si.e = syn_si_e
 syn_nmda_si = h.DetAMPANMDA(interneuron.dendrite(0.5))
 nc_nmda_si = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_si, sec=sensory.central_axon[-1])
 nc_nmda_si.threshold = syn_si_threshold  
-nc_nmda_si.weight[0] = 0.1
+nc_nmda_si.weight[0] = 0.1*1.55
 
 
 
@@ -160,13 +160,13 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-gabab_syn.gmax = 0.0175  # adjust conductance
+gabab_syn.gmax = 0.02  # adjust conductance
 
 # Set up NetCon
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
 gabab_nc.threshold = syn_im_threshold
 gabab_nc.delay = 1
-gabab_nc.weight[0] = 1.0  # this weight will toggle between 0/1 as event flag
+gabab_nc.weight[0] = 0.1*0.75  # this weight will toggle between 0/1 as event flag
 
 # Link the pointer to the weight[0]
 h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)
@@ -180,7 +180,7 @@ syn_sm.e = syn_sm_e
 syn_nmda_sm = h.DetAMPANMDA(motor.dend(0.5))
 nc_nmda_sm = h.NetCon(sensory.central_axon[-1](0.5)._ref_v, syn_nmda_sm, sec=sensory.central_axon[-1])
 nc_nmda_sm.threshold = syn_sm_threshold
-nc_nmda_sm.weight[0] = 0.1
+nc_nmda_sm.weight[0] = 0.1*1.55
 
 
 
@@ -263,7 +263,7 @@ plt.xlabel("Time (ms)")
 plt.ylabel("Injected Current (nA)")
 plt.title("Injected Stimulus")
 plt.grid()
-#plt.show()
+plt.show()
 
 
 

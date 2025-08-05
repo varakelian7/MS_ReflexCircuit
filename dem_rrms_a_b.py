@@ -167,7 +167,7 @@ gabab_syn.gmax = 0.0225*1.2  # adjust conductance
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
 gabab_nc.threshold = syn_im_threshold
 gabab_nc.delay = 1
-gabab_nc.weight[0] = 1.0*0.6  # this weight will toggle between 0/1 as event flag
+gabab_nc.weight[0] = 0.1*0.6  # this weight will toggle between 0/1 as event flag
 
 # Link the pointer to the weight[0]
 h.setpointer(gabab_nc._ref_weight[0], 'pre', gabab_syn)

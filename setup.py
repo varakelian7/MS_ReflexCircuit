@@ -260,7 +260,7 @@ class MyelinatedInterneuron(Cell):
 
     def _setup_biophysics(self):
         for sec in [self.soma, self.dendrite]:
-            sec.Ra = 100
+            sec.Ra = 50
             sec.cm = 1
             sec.insert('hh')
             
