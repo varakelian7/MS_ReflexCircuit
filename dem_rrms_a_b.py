@@ -163,7 +163,7 @@ for i in range(50):
     nc_im.weight[0] = syn_im_weight
 
     gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-    gabab_syn.gmax = 0.0075  # adjust conductance
+    gabab_syn.gmax = 0.0075*2  # adjust conductance
 
     # Set up NetCon
     gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
