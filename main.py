@@ -46,7 +46,7 @@ syn_sm_weight = 0.02 #0.02
 
 # ====================================== Simulation ------------------------------------------------------------------------
 trials = []
-for i in range(50):
+for i in range(1):
     sensory = Sensory(0,0,0,0,0)
     sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.7)
 
@@ -166,49 +166,39 @@ for i in range(50):
     h.continuerun(SIM_DUR)
 
     # ----------------------------------------------- Plots ------------------------------------------------------------------
-    """plt.subplot(4,1,1)
-    #plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
-    plt.plot(sensory.t, sensory.v_soma, label='Soma')
-    #plt.plot(sensory.t, sensory.v_central, label='Central Axon')
-    plt.xlabel('Time (ms)')
-    plt.ylabel('Membrane Potential (mV)')
-    #plt.legend()
-    plt.title("Sensory Neuron (CTRL)")
-    plt.grid()
-
-    plt.subplot(4,1,2)
-    plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
-    #plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
-    #plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
-    plt.xlabel('Time (ms)')
-    plt.ylabel('Membrane Potential (mV)')
-    #plt.legend()
-    plt.title("Interneuron")
-    plt.grid()
-
-
-    plt.subplot(4,1,3)
-    #plt.plot(motor.t, motor.v_dend, label="Dendrite")
-    plt.plot(motor.t, motor.v_soma, label="Soma")
-    #plt.plot(motor.t, motor.v_axon, label="Axon terminal")
-    #plt.legend()
-    plt.xlabel("Time (ms)")
-    plt.ylabel("Membrane Potential (mV)")
-    plt.title("Motor Neuron")
-    plt.grid()
-
-
-    plt.subplot(4,1,4)
-    plt.plot(sensory.t, stim_amp, label="Injected Current")
-    #plt.legend()
-    plt.xlabel("Time (ms)")
-    plt.ylabel("Injected Current (nA)")
-    plt.title("Injected Stimulus")
-    plt.grid()
-    plt.show()"""
+    
 
 
 
     #print("Number of spikes: ", len(list(motor.spike_times)))
     trials.append(len(list(motor.spike_times)))
 print(trials)
+plt.subplot(3,1,1)
+#plt.plot(sensory.t, sensory.v_peripheral, label='Peripheral Axon')
+plt.plot(sensory.t, sensory.v_soma, label='Soma')
+#plt.plot(sensory.t, sensory.v_central, label='Central Axon')
+#plt.legend()
+plt.title("Sensory Neuron (CTRL)")
+plt.grid()
+
+plt.subplot(3,1,2)
+plt.plot(interneuron.t, interneuron.v_soma, label='Soma')
+#plt.plot(interneuron.t, interneuron.v_dend, label='Dendrite') 
+#plt.plot(interneuron.t, interneuron.v_axon, label='Myelinated Axon')
+plt.ylabel('Membrane Potential (mV)')
+#plt.legend()
+plt.title("Interneuron")
+plt.grid()
+
+
+plt.subplot(3,1,3)
+#plt.plot(motor.t, motor.v_dend, label="Dendrite")
+plt.plot(motor.t, motor.v_soma, label="Soma")
+#plt.plot(motor.t, motor.v_axon, label="Axon terminal")
+#plt.legend()
+plt.xlabel("Time (ms)")
+plt.title("Motor Neuron")
+plt.grid()
+plt.tight_layout()
+
+plt.show()
