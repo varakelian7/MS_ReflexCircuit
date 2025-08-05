@@ -37,8 +37,8 @@ c_diam = 1.0            # Central axon diameter
 sensory_soma_L_diam = 25
 
 # Channel properties (HH mechanism)
-gnabar = 0.3          # Sodium conductance
-gkbar = 0.1           # Potassium conductance
+gnabar = 0.03          # Sodium conductance
+gkbar = 0.01           # Potassium conductance
 gl = 0.0003            # Leak conductance
 el = V_REST              # Leak reversal potential
 

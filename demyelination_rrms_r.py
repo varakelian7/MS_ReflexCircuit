@@ -11,7 +11,7 @@ import random as rd
 
 V_REST = -65  
 
-DEMYE_PCT = 8
+DEMYE_PCT = 24
 
 SIM_DUR = 2000
 
@@ -30,7 +30,7 @@ syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
 syn_im_delay = 0 #1
-syn_im_weight = 0.01 #0.015
+syn_im_weight = 0.02 #0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
@@ -160,7 +160,7 @@ nc_im.delay = syn_im_delay
 nc_im.weight[0] = syn_im_weight
 
 gabab_syn = h.GABAb_S(motor.dend(0.5))  # adjust location as needed
-gabab_syn.gmax = 0.01  # adjust conductance
+gabab_syn.gmax = 0.02  # adjust conductance
 
 # Set up NetCon
 gabab_nc = h.NetCon(interneuron.axon[-1](0.5)._ref_v, None, sec=interneuron.axon[-1])
