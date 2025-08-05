@@ -22,29 +22,30 @@ syn_si_tau1 = 0.3 #
 syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
-syn_si_delay = 1 #
-syn_si_weight = 0.03 #
+syn_si_delay = 0 #
+syn_si_weight = 0.03 #0.03
 
 syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 1.0
-syn_im_weight = 0.015
+syn_im_delay = 0 #1
+syn_im_weight = 0.01 #0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 1.18
-syn_sm_weight = 0.02
+syn_sm_delay = 0
+syn_sm_weight = 0.02 #0.02
+
 
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
 
 
-sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.6)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.7)
 
 """
 sensory.stim.start = 2    # ms
@@ -89,12 +90,14 @@ for section in s_internodes:
     section.cm = 0.3
     section.Ra = 50*1.3
     section.g_pas = 1e-5
+    i = 0
     for seg in section:
-        if rd.random() < DEMYE_PCT/100:
+        if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
             section.cm = 0.3*1.3
             seg.g_pas = 0.001
+        i+=1
 
 for section in i_internodes:
     section.insert('hh')  # Add Hodgkin-Huxley channels
@@ -103,12 +106,14 @@ for section in i_internodes:
     section.cm = 0.3
     section.Ra = 50*1.3
     section.g_pas = 1e-5
+    i = 0
     for seg in section:
-        if rd.random() < DEMYE_PCT/100:
+        if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
             section.cm = 0.3*1.3
             seg.g_pas = 0.001
+        i+=1
 
 for section in m_internodes:
     section.insert('hh')  # Add Hodgkin-Huxley channels
@@ -117,12 +122,14 @@ for section in m_internodes:
     section.cm = 0.3
     section.Ra = 50*1.3
     section.g_pas = 1e-5
+    i = 0
     for seg in section:
-        if rd.random() < DEMYE_PCT/100:
+        if i % round(100/DEMYE_PCT) == 0:  # 1 in every 100/DEMYE_PCT should get it
             seg.gnabar_hh = 0.12
             seg.gkbar_hh = 0.036
             section.cm = 0.3*1.3
             seg.g_pas = 0.001
+        i+=1
 
 syn_si = h.Exp2Syn(interneuron.dendrite(0.5))
 syn_si.tau1 = syn_si_tau1
@@ -209,10 +216,10 @@ time_vector = np.arange(0, tstop, dt)
 vec_i = h.Vector(noise_current)
 vec_t = h.Vector(time_vector)
 
-vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
+"""vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
 vec_i.play(i_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
 vec_i.play(m_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
-
+"""
 h.finitialize(V_REST)
 h.continuerun(SIM_DUR)
 

@@ -27,27 +27,27 @@ syn_si_tau1 = 0.3 #
 syn_si_tau2 = 2.0 #
 syn_si_e = 0
 syn_si_threshold = -20
-syn_si_delay = 1 #
+syn_si_delay = 0 #
 syn_si_weight = 0.03 #0.03
 
 syn_im_tau1 = 0.2
 syn_im_tau2 = 5.0
 syn_im_e = -80
 syn_im_threshold = -20
-syn_im_delay = 1.0 #1
-syn_im_weight = 0.015 #0.015
+syn_im_delay = 0 #1
+syn_im_weight = 0.01 #0.015
 
 syn_sm_tau1 = 1.5
 syn_sm_tau2 = 2.0
 syn_sm_e = 0
 syn_sm_threshold = -20
-syn_sm_delay = 1.18
+syn_sm_delay = 0
 syn_sm_weight = 0.02 #0.02
 
 # ====================================== Simulation ------------------------------------------------------------------------
 
 sensory = Sensory(0,0,0,0,0)
-sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.6)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.7)
 
 """
 sensory.stim.start = 2    # ms
@@ -156,10 +156,10 @@ time_vector = np.arange(0, tstop, dt)
 vec_i = h.Vector(noise_current)
 vec_t = h.Vector(time_vector)
 
-vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
+"""vec_i.play(s_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
 vec_i.play(i_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
 vec_i.play(m_noise._ref_amp, vec_t, 1)  # 1 = continuous interpolation
-
+"""
 
 h.finitialize(V_REST)
 h.continuerun(SIM_DUR)

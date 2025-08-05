@@ -5,7 +5,7 @@ ppms_profile = {
     'gaba_b_weight_mult': 0.95
 }
 rrms_attack = {
-    'demyelination_pct': 0.4,  
+    'demyelination_pct': 0.4,
     'demyelination_severity': 0.7,
     'nmda_weight_mult': 1.6,
     'gaba_b_weight_mult': 0.6

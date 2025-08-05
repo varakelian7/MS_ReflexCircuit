@@ -43,7 +43,7 @@ syn_sm_weight = 0.02
 sensory = Sensory(0,0,0,0,0)
 
 
-sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.6)
+sensory.set_stim(delay=2, dur=SIM_DUR, amp=0.4)
 
 """
 sensory.stim.start = 2    # ms
